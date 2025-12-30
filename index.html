@@ -206,9 +206,254 @@
             transform: translateY(-2px);
         }
 
+        .learning-interface {
+            display: none;
+        }
+
+        .learning-interface.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .question-header h2 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .level-selector {
+            display: flex;
+            gap: 10px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 15px;
+            border: 3px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .level-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .level-btn.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .answer-display {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .answer-display h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .key-terms {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .recite-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .recite-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .timer-display {
+            text-align: center;
+            font-size: 3em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .timer-display.warning {
+            color: #ff9800;
+        }
+
+        .timer-display.danger {
+            color: #f44336;
+            animation: pulse 1s infinite;
+        }
+
+        .voice-input-area {
+            background: #f0f4ff;
+            padding: 30px;
+            border-radius: 12px;
+            border: 3px dashed #667eea;
+            text-align: center;
+        }
+
+        .mic-button {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            font-size: 3em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            margin: 20px auto;
+            display: block;
+        }
+
+        .mic-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .mic-button.recording {
+            background: #f44336;
+            animation: pulse 1.5s infinite;
+        }
+
+        .transcription-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            min-height: 150px;
+            border: 2px solid #667eea;
+            text-align: left;
+            font-size: 1.1em;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn {
+            padding: 15px 40px;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .secondary-btn {
+            padding: 15px 40px;
+            background: white;
+            color: #667eea;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .feedback-section {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .feedback-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .score-display {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #4caf50, #45a049);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            font-weight: bold;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2em;
+            }
+            .level-selector {
+                flex-direction: column;
             }
         }
 
@@ -238,13 +483,23 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🎓 Acharya108</h1>
-            <p class="tagline">Affordable Education for All from All Strata of Life and Science</p>
+            <p class="tagline">Affordable Education for All - Laws of Motion Learning System</p>
         </header>
 
         <div class="content-card">
@@ -310,6 +565,71 @@
                         <h3 class="section-title">📚 Detailed Answer Questions</h3>
                         <ul class="question-list" id="detailed-questions"></ul>
                     </div>
+
+                    <div id="learning-interface" class="learning-interface">
+                        <div class="question-header">
+                            <h2 id="current-question"></h2>
+                            <p style="margin-top: 10px; opacity: 0.9;">Select a difficulty level and study the answer</p>
+                        </div>
+
+                        <div class="level-selector">
+                            <button class="level-btn active" data-level="basic">Basic</button>
+                            <button class="level-btn" data-level="elementary">Elementary</button>
+                            <button class="level-btn" data-level="intermediate">Intermediate</button>
+                            <button class="level-btn" data-level="advanced">Advanced</button>
+                            <button class="level-btn" data-level="expert">Expert</button>
+                        </div>
+
+                        <div id="answer-display" class="answer-display">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                <p>Loading answer...</p>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="primary-btn" onclick="startRecite()">🎤 Start Reciting</button>
+                        </div>
+
+                        <div id="recite-section" class="recite-section">
+                            <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                                <strong>📢 Instructions:</strong> Click the microphone to record. Recite the answer you memorized. Try to include all key points!
+                            </div>
+
+                            <div id="voice-mode" class="voice-input-area">
+                                <div class="timer-display" id="timer">3:00</div>
+                                <h3 style="margin-bottom: 15px;">Click microphone to start/stop recording</h3>
+                                <button class="mic-button" id="micBtn" onclick="toggleRecording()">🎤</button>
+                                <p id="recording-status" style="color: #667eea; font-weight: bold; margin-bottom: 15px;">Ready to record</p>
+                                
+                                <div class="transcription-box" id="transcription">
+                                    Your answer will appear here as you speak...
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="secondary-btn" onclick="stopRecite()">Cancel</button>
+                                <button class="primary-btn" onclick="submitForEvaluation()">✓ Submit for Evaluation</button>
+                            </div>
+                        </div>
+
+                        <div id="feedback-section" class="feedback-section">
+                            <h2 style="color: #667eea; margin-bottom: 20px;">📊 Your Performance</h2>
+                            
+                            <div class="score-display">
+                                <div class="score-circle" id="score-circle">85%</div>
+                            </div>
+
+                            <div id="feedback-text" style="margin-top: 25px;">
+                                Loading evaluation...
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="secondary-btn" onclick="tryAgain()">🔄 Try Again</button>
+                                <button class="primary-btn" onclick="nextQuestion()">Next Question →</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="tamil-medium" class="tab-content">
@@ -322,17 +642,7 @@
     </div>
 
     <script>
-        // Navigation state
-        let navigationStack = [];
-        let currentState = {
-            board: 'tn',
-            medium: 'english',
-            grade: null,
-            subject: null,
-            lesson: null,
-            question: null
-        };
-
+        // Questions database
         const questions = {
             brief: [
                 "Define inertia. Give its classification.",
@@ -355,6 +665,23 @@
                 "State the universal law of gravitation and derive its mathematical expression",
                 "Give the applications of universal law gravitation."
             ]
+        };
+
+        // Navigation state
+        let currentState = {
+            board: 'tn',
+            medium: 'english',
+            grade: null,
+            subject: null,
+            lesson: null,
+            question: null,
+            level: 'basic',
+            isRecording: false,
+            recognition: null,
+            timeRemaining: 180,
+            timerInterval: null,
+            userTranscript: '',
+            currentAnswer: ''
         };
 
         // Initialize event listeners
@@ -394,12 +721,48 @@
                 });
             });
 
+            // Level buttons
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    selectLevel(this.dataset.level);
+                });
+            });
+
             // Back button
             document.getElementById('backBtn').addEventListener('click', goBack);
+
+            // Initialize speech recognition
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                currentState.recognition = new SpeechRecognition();
+                currentState.recognition.continuous = true;
+                currentState.recognition.interimResults = true;
+                currentState.recognition.lang = 'en-US';
+                
+                currentState.recognition.onresult = function(event) {
+                    let transcript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        transcript += event.results[i][0].transcript + ' ';
+                    }
+                    currentState.userTranscript = transcript.trim();
+                    document.getElementById('transcription').textContent = currentState.userTranscript || 'Your answer will appear here as you speak...';
+                };
+
+                currentState.recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    document.getElementById('recording-status').textContent = 'Error: ' + event.error + ' - Click mic to try again';
+                };
+
+                currentState.recognition.onend = function() {
+                    if (currentState.isRecording) {
+                        // Automatically restart if still in recording mode
+                        currentState.recognition.start();
+                    }
+                };
+            }
         });
 
         function switchTab(tabName) {
-            // Update tab buttons
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
                 if (tab.dataset.tab === tabName) {
@@ -407,19 +770,16 @@
                 }
             });
 
-            // Update content
-            document.querySelectorAll('.tab-content').forEach(content => {
+            document.querySelectorAll('#cbse-content, #tn-content').forEach(content => {
                 content.classList.remove('active');
             });
             document.getElementById(tabName + '-content').classList.add('active');
 
             currentState.board = tabName;
             updateBreadcrumb();
-            resetNavigation();
         }
 
         function switchMedium(medium) {
-            // Update sub-tab buttons
             document.querySelectorAll('.sub-tab').forEach(subTab => {
                 subTab.classList.remove('active');
                 if (subTab.dataset.medium === medium) {
@@ -427,41 +787,38 @@
                 }
             });
 
-            // Update content
             document.getElementById('english-medium').classList.remove('active');
             document.getElementById('tamil-medium').classList.remove('active');
             document.getElementById(medium + '-medium').classList.add('active');
 
             currentState.medium = medium;
             updateBreadcrumb();
-            resetNavigation();
         }
 
         function selectGrade(grade) {
-            navigationStack.push('grade-selection');
+            if (grade !== 10) {
+                alert('Only Grade 10 Science content is currently available!');
+                return;
+            }
             currentState.grade = grade;
-            
             document.getElementById('grade-selection').style.display = 'none';
             document.getElementById('subject-selection').style.display = 'block';
-            document.getElementById('backBtn').style.display = 'block';
-            
             updateBreadcrumb();
         }
 
         function selectSubject(subject) {
-            navigationStack.push('subject-selection');
+            if (subject !== 'science') {
+                alert('Only Science content is currently available!');
+                return;
+            }
             currentState.subject = subject;
-            
             document.getElementById('subject-selection').style.display = 'none';
             document.getElementById('lesson-selection').style.display = 'block';
-            
             updateBreadcrumb();
         }
 
         function selectLesson(lessonNum) {
-            navigationStack.push('lesson-selection');
             currentState.lesson = lessonNum;
-            
             document.getElementById('lesson-selection').style.display = 'none';
             document.getElementById('question-selection').style.display = 'block';
             
@@ -479,7 +836,10 @@
             questions.brief.forEach((q, index) => {
                 const li = document.createElement('li');
                 li.className = 'question-item';
-                li.textContent = q;
+                li.innerHTML = `
+                    <div style="font-weight: bold; color: #667eea; margin-bottom: 8px;">Question ${index + 1}</div>
+                    <div style="font-size: 1.1em;">${q}</div>
+                `;
                 li.onclick = () => selectQuestion(q, 'brief');
                 briefList.appendChild(li);
             });
@@ -487,7 +847,10 @@
             questions.detailed.forEach((q, index) => {
                 const li = document.createElement('li');
                 li.className = 'question-item';
-                li.textContent = q;
+                li.innerHTML = `
+                    <div style="font-weight: bold; color: #667eea; margin-bottom: 8px;">Question ${index + 1}</div>
+                    <div style="font-size: 1.1em;">${q}</div>
+                `;
                 li.onclick = () => selectQuestion(q, 'detailed');
                 detailedList.appendChild(li);
             });
@@ -495,357 +858,94 @@
 
         function selectQuestion(question, type) {
             currentState.question = { text: question, type: type };
-            alert('Question selected: ' + question + '\n\nLearning interface coming soon!');
-        }
-
-        function goBack() {
-            if (navigationStack.length === 0) return;
-            
-            const previousScreen = navigationStack.pop();
-            
-            // Hide all sections
-            document.getElementById('grade-selection').style.display = 'none';
-            document.getElementById('subject-selection').style.display = 'none';
-            document.getElementById('lesson-selection').style.display = 'none';
-            document.getElementById('question-selection').style.display = 'none';
-            
-            // Show the appropriate section
-            document.getElementById(previousScreen).style.display = 'block';
-            
-            // Update state
-            switch(previousScreen) {
-                case 'grade-selection':
-                    currentState.grade = null;
-                    currentState.subject = null;
-                    currentState.lesson = null;
-                    break;
-                case 'subject-selection':
-                    currentState.subject = null;
-                    currentState.lesson = null;
-                    break;
-                case 'lesson-selection':
-                    currentState.lesson = null;
-                    break;
-            }
-            
-            if (navigationStack.length === 0) {
-                document.getElementById('backBtn').style.display = 'none';
-            }
-            
-            updateBreadcrumb();
-        }
-
-        function resetNavigation() {
-            navigationStack = [];
-            currentState.grade = null;
-            currentState.subject = null;
-            currentState.lesson = null;
-            currentState.question = null;
-            
-            document.getElementById('grade-selection').style.display = 'block';
-            document.getElementById('subject-selection').style.display = 'none';
-            document.getElementById('lesson-selection').style.display = 'none';
-            document.getElementById('question-selection').style.display = 'none';
-            document.getElementById('backBtn').style.display = 'none';
-        }
-
-        function updateBreadcrumb() {
-            let breadcrumbText = 'Home';
-            
-            if (currentState.board === 'cbse') {
-                breadcrumbText += ' > CBSE';
-            } else if (currentState.board === 'tn') {
-                breadcrumbText += ' > TN State Board';
-            }
-            
-            if (currentState.medium === 'english') {
-                breadcrumbText += ' > English Medium';
-            } else if (currentState.medium === 'tamil') {
-                breadcrumbText += ' > Tamil Medium';
-            }
-            
-            if (currentState.grade) {
-                breadcrumbText += ' > Grade ' + currentState.grade;
-            }
-            
-            if (currentState.subject) {
-                breadcrumbText += ' > ' + currentState.subject.charAt(0).toUpperCase() + currentState.subject.slice(1);
-            }
-            
-            if (currentState.lesson) {
-                breadcrumbText += ' > Lesson ' + currentState.lesson;
-            }
-            
-            document.getElementById('breadcrumb').textContent = breadcrumbText;
-        }
-    </script>
-    <script>
-        const GEMINI_API_KEY = 'YOUR_API_KEY_HERE'; // User needs to add their free Gemini API key
-
-        const questions = {
-            brief: [
-                "Define inertia. Give its classification.",
-                "Classify the types of force based on their application.",
-                "If a 5 Newton and a 15 Newton forces are acting opposite to one another. Find the resultant force and the direction of action of the resultant force",
-                "Differentiate mass and weight.",
-                "Define moment of a couple.",
-                "State the principle of moments.",
-                "State Newton's second law.",
-                "Why a spanner with a long handle is preferred to tighten screws in heavy vehicles?",
-                "While catching a cricket ball the fielder lowers his hands backwards. Why?",
-                "How does an astronaut float in a space shuttle?"
-            ],
-            detailed: [
-                "What are the types of inertia? Give an example for each type.",
-                "State Newton's laws of motion?",
-                "Deduce the equation of a force using Newton's second law of motion.",
-                "State and prove the law of conservation of linear momentum.",
-                "Describe rocket propulsion.",
-                "State the universal law of gravitation and derive its mathematical expression",
-                "Give the applications of universal law gravitation."
-            ]
-        };
-
-        let currentState = {
-            board: 'tn',
-            medium: 'english',
-            grade: null,
-            subject: null,
-            lesson: null,
-            questionType: null,
-            questionIndex: null,
-            question: null,
-            level: 'basic',
-            currentAnswer: '',
-            userTranscript: '',
-            timerInterval: null,
-            timeRemaining: 180,
-            isRecording: false,
-            recognition: null
-        };
-
-        function updateBreadcrumb() {
-            let crumbs = ['Home'];
-            if (currentState.board === 'tn') crumbs.push('TN State Board');
-            if (currentState.medium) crumbs.push(currentState.medium === 'english' ? 'English Medium' : 'Tamil Medium');
-            if (currentState.grade) crumbs.push(`Grade ${currentState.grade}`);
-            if (currentState.subject) crumbs.push(currentState.subject.charAt(0).toUpperCase() + currentState.subject.slice(1));
-            if (currentState.lesson) crumbs.push(`Lesson ${currentState.lesson}`);
-            if (currentState.question) crumbs.push('Question');
-            
-            document.getElementById('breadcrumb').textContent = crumbs.join(' > ');
-            document.getElementById('backBtn').style.display = crumbs.length > 1 ? 'block' : 'none';
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(`${tab}-content`).classList.add('active');
-            
-            currentState.board = tab;
-            updateBreadcrumb();
-        }
-
-        function switchMedium(medium) {
-            document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            document.querySelectorAll('#tn-content > .tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(`${medium}-medium`).classList.add('active');
-            
-            currentState.medium = medium;
-            updateBreadcrumb();
-        }
-
-        function selectGrade(grade) {
-            if (grade !== 10) {
-                alert('Only Grade 10 Science Lesson 1 is currently available!');
-                return;
-            }
-            currentState.grade = grade;
-            document.getElementById('grade-selection').style.display = 'none';
-            document.getElementById('subject-selection').style.display = 'block';
-            updateBreadcrumb();
-        }
-
-        function selectSubject(subject) {
-            if (subject !== 'science') {
-                alert('Only Science is currently available!');
-                return;
-            }
-            currentState.subject = subject;
-            document.getElementById('subject-selection').style.display = 'none';
-            document.getElementById('lesson-selection').style.display = 'block';
-            updateBreadcrumb();
-        }
-
-        function selectLesson(lesson) {
-            currentState.lesson = lesson;
-            document.getElementById('lesson-selection').style.display = 'none';
-            document.getElementById('question-selection').style.display = 'block';
-            
-            loadQuestions();
-            updateBreadcrumb();
-        }
-
-        function loadQuestions() {
-            const briefList = document.getElementById('brief-questions');
-            const detailedList = document.getElementById('detailed-questions');
-            
-            briefList.innerHTML = '';
-            detailedList.innerHTML = '';
-            
-            questions.brief.forEach((q, i) => {
-                const li = document.createElement('li');
-                li.className = 'question-item';
-                li.innerHTML = `
-                    <div style="font-weight: bold; color: #667eea; margin-bottom: 8px;">Question ${i + 1}</div>
-                    <div style="font-size: 1.1em; color: #333;">${q}</div>
-                `;
-                li.onclick = () => selectQuestion('brief', i, q);
-                briefList.appendChild(li);
-            });
-            
-            questions.detailed.forEach((q, i) => {
-                const li = document.createElement('li');
-                li.className = 'question-item';
-                li.innerHTML = `
-                    <div style="font-weight: bold; color: #667eea; margin-bottom: 8px;">Question ${i + 1}</div>
-                    <div style="font-size: 1.1em; color: #333;">${q}</div>
-                `;
-                li.onclick = () => selectQuestion('detailed', i, q);
-                detailedList.appendChild(li);
-            });
-        }
-
-        async function selectQuestion(type, index, question) {
-            currentState.questionType = type;
-            currentState.questionIndex = index;
-            currentState.question = question;
             
             document.getElementById('question-selection').style.display = 'none';
             document.getElementById('learning-interface').classList.add('active');
             document.getElementById('current-question').textContent = question;
             
-            await loadAnswer();
+            loadAnswer();
             updateBreadcrumb();
         }
 
-        async function selectLevel(level) {
+        function selectLevel(level) {
             currentState.level = level;
-            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.level === level) {
+                    btn.classList.add('active');
+                }
+            });
             
-            await loadAnswer();
+            loadAnswer();
         }
 
-        async function loadAnswer() {
+        function loadAnswer() {
             const answerDisplay = document.getElementById('answer-display');
             answerDisplay.innerHTML = '<div class="loading"><div class="spinner"></div><p>Generating answer...</p></div>';
 
-            try {
-                const answer = await generateAnswer(currentState.question, currentState.level);
+            // Simulate loading and generate answer
+            setTimeout(() => {
+                const answer = getDemoAnswer(currentState.level);
                 currentState.currentAnswer = answer;
                 
                 answerDisplay.innerHTML = `
                     <h3>📖 ${currentState.level.charAt(0).toUpperCase() + currentState.level.slice(1)} Level Answer</h3>
-                    <p>${answer}</p>
+                    <p style="line-height: 2; margin-top: 15px;">${answer}</p>
                     <div class="key-terms">
-                        <strong>💡 Tip:</strong> Read and understand this answer thoroughly before clicking "Start Reciting"
+                        <strong>💡 Study Tip:</strong> Read this answer carefully and try to understand all key concepts before clicking "Start Reciting". Take your time!
                     </div>
                 `;
-            } catch (error) {
-                answerDisplay.innerHTML = `
-                    <p style="color: #f44336;"><strong>Error:</strong> ${error.message}</p>
-                    <p style="margin-top: 15px;">Please make sure you've added your Gemini API key in the code, or the answer will be generated as a demo.</p>
-                `;
-                
-                // Demo answer for testing
-                currentState.currentAnswer = getDemoAnswer(currentState.level);
-                setTimeout(() => {
-                    answerDisplay.innerHTML = `
-                        <h3>📖 ${currentState.level.charAt(0).toUpperCase() + currentState.level.slice(1)} Level Answer (Demo)</h3>
-                        <p>${currentState.currentAnswer}</p>
-                        <div class="key-terms">
-                            <strong>💡 Key Terms:</strong> Inertia, Newton's Laws, Force, Mass
-                        </div>
-                    `;
-                }, 1000);
-            }
+            }, 800);
         }
 
         function getDemoAnswer(level) {
-            const demos = {
-                basic: "Inertia is the property of an object to resist changes in its state of motion. It is classified into three types: inertia of rest, inertia of motion, and inertia of direction.",
-                elementary: "Inertia is the tendency of a body to maintain its state of rest or uniform motion. The three types are: (1) Inertia of rest - objects at rest tend to stay at rest, (2) Inertia of motion - moving objects tend to keep moving, (3) Inertia of direction - objects moving in a straight line tend to continue in that direction.",
-                intermediate: "Inertia is a fundamental property of matter that describes the resistance of an object to any change in its velocity. This includes changes in speed or direction. The three classifications are based on the initial state: Inertia of rest keeps stationary objects stationary unless acted upon by external force. Inertia of motion maintains constant velocity in moving objects. Inertia of direction preserves the direction of motion unless external force intervenes.",
-                advanced: "Inertia represents the quantitative measure of an object's resistance to acceleration, directly proportional to its mass. Newton's First Law establishes this principle. The three types are: (1) Inertia of rest - exemplified by a book remaining on a table until force is applied, (2) Inertia of motion - demonstrated when passengers lurch forward during sudden braking, (3) Inertia of direction - observed when a stone tied to a string moves tangentially upon release.",
-                expert: "Inertia is an intrinsic property of matter that manifests as resistance to changes in velocity, mathematically represented by mass in F=ma. The classification into three types reflects different observational frames: Static inertia (rest) derives from molecular forces and intermolecular attractions maintaining positional equilibrium. Kinetic inertia (motion) reflects momentum conservation (p=mv) where objects maintain linear velocity absent external forces. Directional inertia emerges from vector properties of velocity, requiring centripetal force for circular motion, as described by Newton's laws and later refined in Einstein's theory of relativity."
+            const question = currentState.question.text;
+            
+            // Different answers based on question and level
+            const answers = {
+                "Define inertia. Give its classification.": {
+                    basic: "Inertia is the property of an object to resist changes in its state of motion. It is classified into three types: inertia of rest (objects at rest stay at rest), inertia of motion (moving objects keep moving), and inertia of direction (objects continue in the same direction).",
+                    elementary: "Inertia is the tendency of a body to maintain its state of rest or uniform motion. The three types are: (1) Inertia of rest - objects at rest tend to stay at rest unless acted upon by an external force. (2) Inertia of motion - moving objects tend to keep moving at the same speed and direction. (3) Inertia of direction - objects moving in a straight line tend to continue in that direction unless disturbed.",
+                    intermediate: "Inertia is a fundamental property of matter that describes the resistance of an object to any change in its velocity. This property is directly proportional to the mass of the object. The three classifications are: Inertia of rest keeps stationary objects stationary unless acted upon by external force (example: a book on a table). Inertia of motion maintains constant velocity in moving objects (example: a moving car continues to move forward even when the engine is turned off). Inertia of direction preserves the direction of motion unless external force intervenes (example: mud flying off from a rotating wheel moves tangentially).",
+                    advanced: "Inertia represents the quantitative measure of an object's resistance to acceleration, directly proportional to its mass as described in Newton's First Law of Motion. The three types are: (1) Inertia of rest - exemplified by a book remaining on a table until an external force is applied, due to molecular cohesion and intermolecular forces maintaining the object's position. (2) Inertia of motion - demonstrated when passengers lurch forward during sudden braking, as their bodies tend to maintain their state of motion according to the law of conservation of momentum. (3) Inertia of direction - observed when a stone tied to a string moves tangentially upon release, as it maintains its instantaneous velocity direction due to absence of centripetal force.",
+                    expert: "Inertia is an intrinsic property of matter that manifests as resistance to changes in velocity, mathematically represented by mass in Newton's second law (F=ma). The classification into three types reflects different observational frames: Static inertia (rest) derives from molecular forces and intermolecular attractions maintaining positional equilibrium in the center of mass frame. Kinetic inertia (motion) reflects momentum conservation (p=mv) where objects maintain linear velocity absent external forces, as described by Galilean relativity. Directional inertia emerges from vector properties of velocity, requiring centripetal force (F=mv²/r) for circular motion. This principle extends to Einstein's general relativity where inertial mass equals gravitational mass, leading to the equivalence principle."
+                },
+                "Classify the types of force based on their application.": {
+                    basic: "Forces are classified into two types based on application: Contact forces require physical touch between objects (examples: friction, tension, normal force). Non-contact forces act at a distance without physical contact (examples: gravitational force, magnetic force, electrostatic force).",
+                    elementary: "Based on application, forces are classified into: (1) Contact Forces - These forces act only when objects are in physical contact. Examples include friction (opposes motion), tension (pulling force in strings), normal force (perpendicular support force), and applied force. (2) Non-Contact Forces - These forces can act even without physical touch. Examples include gravitational force (attraction between masses), magnetic force (between magnets), and electrostatic force (between charged objects).",
+                    intermediate: "Forces are categorized based on their mode of application: Contact forces require direct physical interaction between objects. These include friction (parallel to surface, opposes relative motion), normal force (perpendicular to surface, prevents penetration), tension (transmitted through rope/string), air resistance, and muscular force. Non-contact or field forces act through space without direct contact. These include gravitational force (universal attraction between all masses following F=Gm₁m₂/r²), electromagnetic force (between charged particles), and nuclear forces (strong and weak forces at atomic level).",
+                    advanced: "Classification of forces based on application yields two fundamental categories: Contact forces arise from electromagnetic interactions at the molecular level during physical contact. These include friction (static and kinetic, depending on coefficient μ and normal force), normal force (electromagnetic repulsion between electron clouds), tension (internal cohesive forces in constrained objects), and viscous forces in fluids. Non-contact forces represent fundamental interactions: gravitational force (F=Gm₁m₂/r², infinite range, always attractive), electromagnetic force (Coulomb's law F=kq₁q₂/r², infinite range, can be attractive or repulsive), strong nuclear force (binding nucleons, range ~10⁻¹⁵m), and weak nuclear force (responsible for radioactive decay).",
+                    expert: "Force classification based on application reflects the four fundamental interactions in nature. Contact forces are macroscopic manifestations of electromagnetic interaction at the quantum level. Friction emerges from van der Waals forces and mechanical interlocking at microscopic scales, describable through Coulomb and Amontons-Coulomb laws with corrections for adhesion. Normal force represents Pauli exclusion principle preventing electron orbital overlap. Non-contact forces include: Gravitation (gauge boson: graviton theoretically, field theory described by Einstein's general relativity with stress-energy tensor T_μν), Electromagnetic (photon-mediated, unified by Maxwell's equations and QED), Strong force (gluon-mediated, confined by QCD asymptotic freedom), Weak force (W±, Z⁰ bosons, responsible for beta decay via electroweak unification SU(2)×U(1))."
+                }
             };
-            return demos[level] || demos.basic;
-        }
 
-        async function generateAnswer(question, level) {
-            if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_API_KEY_HERE') {
-                throw new Error('API key not configured');
+            // Default answer if specific question not found
+            const defaultAnswers = {
+                basic: "This is a basic level answer that provides fundamental understanding of the concept. It includes key definitions and simple explanations suitable for beginners.",
+                elementary: "This elementary level answer builds on basic concepts with more detailed explanations. It includes examples and breaks down the concept into understandable parts for better comprehension.",
+                intermediate: "This intermediate level answer provides comprehensive coverage of the topic with scientific explanations, formulas, and practical applications. It requires good understanding of fundamental concepts.",
+                advanced: "This advanced level answer includes in-depth scientific reasoning, mathematical derivations, and real-world applications. It demonstrates mastery of the subject matter with detailed analysis.",
+                expert: "This expert level answer provides exhaustive analysis with quantum mechanical considerations, advanced mathematical formulations, and connections to cutting-edge research. It represents the highest level of understanding."
+            };
+
+            if (answers[question] && answers[question][level]) {
+                return answers[question][level];
+            } else {
+                return defaultAnswers[level];
             }
-
-            const prompts = {
-                basic: "Provide a simple, 2-3 sentence answer suitable for a beginner student.",
-                elementary: "Provide a clear 4-5 sentence answer with basic examples.",
-                intermediate: "Provide a comprehensive 6-7 sentence answer with explanations and examples.",
-                advanced: "Provide a detailed answer with scientific reasoning, formulas, and real-world applications.",
-                expert: "Provide an expert-level answer with in-depth analysis, mathematical derivations, and advanced concepts."
-            };
-
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `You are teaching Grade 10 Physics (TN State Board - Laws of Motion). ${prompts[level]}\n\nQuestion: ${question}\n\nProvide the answer in a clear, educational format. Include key terms and formulas where applicable.`
-                        }]
-                    }]
-                })
-            });
-
-            const data = await response.json();
-            return data.candidates[0].content.parts[0].text;
         }
 
         function startRecite() {
             document.getElementById('answer-display').style.display = 'none';
             document.getElementById('recite-section').classList.add('active');
             
-            // Initialize speech recognition
-            if ('webkitSpeechRecognition' in window) {
-                currentState.recognition = new webkitSpeechRecognition();
-                currentState.recognition.continuous = true;
-                currentState.recognition.interimResults = true;
-                currentState.recognition.lang = 'en-US';
-                
-                currentState.recognition.onresult = (event) => {
-                    let transcript = '';
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                        transcript += event.results[i][0].transcript;
-                    }
-                    currentState.userTranscript = transcript;
-                    document.getElementById('transcription').textContent = transcript || 'Your answer will appear here as you speak...';
-                };
-
-                currentState.recognition.onerror = (event) => {
-                    console.error('Speech recognition error:', event.error);
-                    document.getElementById('recording-status').textContent = 'Error: ' + event.error;
-                };
-            } else {
-                alert('Speech recognition is not supported in your browser. Please use Chrome or Edge.');
-            }
-            
-            // Reset timer
+            // Reset everything
+            currentState.userTranscript = '';
             currentState.timeRemaining = 180;
+            currentState.isRecording = false;
+            document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
+            document.getElementById('recording-status').textContent = 'Ready to record. Click the microphone!';
+            document.getElementById('micBtn').classList.remove('recording');
             updateTimer();
         }
 
@@ -853,9 +953,14 @@
             const micBtn = document.getElementById('micBtn');
             const status = document.getElementById('recording-status');
             
+            if (!currentState.recognition) {
+                alert('🎤 Speech recognition is not supported in your browser.\n\nPlease use Chrome, Edge, or Safari for voice recording feature.');
+                return;
+            }
+            
             if (!currentState.isRecording) {
                 // Start recording
-                if (currentState.recognition) {
+                try {
                     currentState.recognition.start();
                     currentState.isRecording = true;
                     micBtn.classList.add('recording');
@@ -871,17 +976,20 @@
                             alert('Time is up! Your answer has been recorded.');
                         }
                     }, 1000);
-                } else {
-                    alert('Speech recognition not available. Your browser may not support this feature.');
+                } catch (error) {
+                    console.error('Failed to start recording:', error);
+                    status.textContent = 'Error starting recording. Please try again.';
                 }
             } else {
                 // Stop recording
-                if (currentState.recognition) {
+                try {
                     currentState.recognition.stop();
+                } catch (error) {
+                    console.error('Error stopping recognition:', error);
                 }
                 currentState.isRecording = false;
                 micBtn.classList.remove('recording');
-                status.textContent = 'Recording stopped. Click Submit to evaluate.';
+                status.textContent = 'Recording stopped. Click Submit to evaluate your answer.';
                 
                 if (currentState.timerInterval) {
                     clearInterval(currentState.timerInterval);
@@ -916,18 +1024,15 @@
             document.getElementById('recite-section').classList.remove('active');
             document.getElementById('answer-display').style.display = 'block';
             
-            // Clear the transcription box
             currentState.userTranscript = '';
             document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
-            
-            // Reset recording status
             document.getElementById('recording-status').textContent = 'Ready to record';
             document.getElementById('micBtn').classList.remove('recording');
         }
 
-        async function submitForEvaluation() {
-            if (!currentState.userTranscript || currentState.userTranscript.trim().length < 5) {
-                alert('Please record your answer before submitting! Your answer is too short.');
+        function submitForEvaluation() {
+            if (!currentState.userTranscript || currentState.userTranscript.trim().length < 10) {
+                alert('⚠️ Please record your answer before submitting!\n\nYour answer is too short. Speak more about the topic.');
                 return;
             }
 
@@ -938,221 +1043,73 @@
             document.getElementById('recite-section').classList.remove('active');
             document.getElementById('feedback-section').classList.add('active');
             
-            // Show loading
             document.getElementById('feedback-text').innerHTML = '<div class="loading"><div class="spinner"></div><p>Evaluating your answer...</p></div>';
 
-            // Use built-in evaluation (no API needed!)
+            // Evaluate answer
             setTimeout(() => {
-                const evaluation = evaluateAnswerBuiltIn(
-                    currentState.question,
-                    currentState.userTranscript
-                );
-                
-                displayDetailedFeedback(evaluation);
-            }, 1000);
+                const evaluation = evaluateAnswer(currentState.question.text, currentState.userTranscript);
+                displayFeedback(evaluation);
+            }, 1500);
         }
 
-        const questionRubrics = {
-            "Define inertia. Give its classification.": {
-                keywords: [
-                    { text: ["resistance to change", "resist change", "opposes change"], points: 20, label: "Basic concept of resistance" },
-                    { text: ["property", "characteristic", "nature"], points: 10, label: "Property definition" },
-                    { text: ["object", "body", "matter"], points: 5, label: "Subject identification" },
-                    { text: ["state of motion", "motion state", "velocity"], points: 10, label: "State of motion" },
-                    { text: ["classified", "classification", "types", "kinds", "three types", "3 types"], points: 10, label: "Mention of classification" },
-                    { text: ["inertia of rest", "rest inertia", "resting"], points: 10, label: "Type 1: Rest" },
-                    { text: ["inertia of motion", "motion inertia", "moving"], points: 10, label: "Type 2: Motion" },
-                    { text: ["inertia of direction", "directional inertia", "direction"], points: 10, label: "Type 3: Direction" }
-                ],
-                grammar: 15,
-                minWords: 15
-            },
-            "Classify the types of force based on their application.": {
-                keywords: [
-                    { text: ["contact force", "contact forces"], points: 20, label: "Contact force" },
-                    { text: ["non-contact force", "non contact force", "action at a distance"], points: 20, label: "Non-contact force" },
-                    { text: ["touch", "physical contact", "touching"], points: 10, label: "Contact explanation" },
-                    { text: ["friction", "tension", "normal force"], points: 10, label: "Contact force examples" },
-                    { text: ["gravity", "gravitational", "magnetic", "electrostatic"], points: 10, label: "Non-contact examples" },
-                    { text: ["classify", "classification", "types", "categories"], points: 10, label: "Classification mentioned" }
-                ],
-                grammar: 20,
-                minWords: 20
-            },
-            "If a 5 Newton and a 15 Newton forces are acting opposite to one another. Find the resultant force and the direction of action of the resultant force": {
-                keywords: [
-                    { text: ["resultant", "net force", "total force"], points: 15, label: "Resultant force concept" },
-                    { text: ["opposite", "opposing", "opposite direction"], points: 10, label: "Opposite direction mentioned" },
-                    { text: ["subtract", "difference", "minus"], points: 15, label: "Subtraction method" },
-                    { text: ["10", "ten", "10 newton"], points: 20, label: "Correct answer: 10N" },
-                    { text: ["direction", "towards", "15 newton"], points: 20, label: "Direction of larger force" },
-                    { text: ["newton", "n", "unit"], points: 5, label: "Correct unit" }
-                ],
-                grammar: 15,
-                minWords: 12
-            },
-            "Differentiate mass and weight.": {
-                keywords: [
-                    { text: ["mass", "quantity of matter", "amount of matter"], points: 15, label: "Mass definition" },
-                    { text: ["weight", "gravitational force", "pull of gravity"], points: 15, label: "Weight definition" },
-                    { text: ["scalar", "magnitude only"], points: 10, label: "Mass is scalar" },
-                    { text: ["vector", "magnitude and direction"], points: 10, label: "Weight is vector" },
-                    { text: ["constant", "same everywhere", "does not change"], points: 10, label: "Mass is constant" },
-                    { text: ["varies", "changes", "different"], points: 10, label: "Weight varies" },
-                    { text: ["kg", "kilogram", "gram"], points: 5, label: "Mass unit" },
-                    { text: ["newton", "n"], points: 5, label: "Weight unit" }
-                ],
-                grammar: 20,
-                minWords: 25
-            },
-            "State Newton's second law.": {
-                keywords: [
-                    { text: ["rate of change", "change of momentum"], points: 20, label: "Rate of change concept" },
-                    { text: ["momentum", "linear momentum"], points: 15, label: "Momentum mentioned" },
-                    { text: ["proportional", "directly proportional"], points: 15, label: "Proportionality" },
-                    { text: ["applied force", "force applied", "external force"], points: 15, label: "Applied force" },
-                    { text: ["direction", "same direction"], points: 10, label: "Direction mentioned" },
-                    { text: ["f=ma", "f = ma", "force equals mass times acceleration"], points: 10, label: "Formula mentioned" }
-                ],
-                grammar: 15,
-                minWords: 15
-            },
-            "State Newton's laws of motion?": {
-                keywords: [
-                    { text: ["first law", "law of inertia", "newton's first"], points: 15, label: "First law mentioned" },
-                    { text: ["rest", "uniform motion", "constant velocity"], points: 10, label: "First law - state of motion" },
-                    { text: ["second law", "newton's second"], points: 15, label: "Second law mentioned" },
-                    { text: ["f=ma", "force equals", "proportional"], points: 10, label: "Second law - formula/concept" },
-                    { text: ["third law", "action and reaction", "newton's third"], points: 15, label: "Third law mentioned" },
-                    { text: ["equal", "opposite", "equal and opposite"], points: 10, label: "Third law - equal & opposite" },
-                    { text: ["action", "reaction"], points: 10, label: "Action-reaction pair" }
-                ],
-                grammar: 15,
-                minWords: 30
-            }
-        };
-
-        function evaluateAnswerBuiltIn(question, userAnswer) {
-            const rubric = questionRubrics[question];
-            
-            if (!rubric) {
-                // Generic evaluation for questions without specific rubric
-                return evaluateGenericAnswer(userAnswer);
-            }
-
+        function evaluateAnswer(question, userAnswer) {
             const lowerAnswer = userAnswer.toLowerCase();
             const wordCount = userAnswer.trim().split(/\s+/).length;
             
-            let totalScore = 0;
-            let maxScore = 0;
-            let breakdown = [];
-            
-            // Evaluate keywords
-            rubric.keywords.forEach(criterion => {
-                maxScore += criterion.points;
-                let found = false;
-                
-                for (let keyword of criterion.text) {
-                    if (lowerAnswer.includes(keyword.toLowerCase())) {
-                        totalScore += criterion.points;
-                        breakdown.push({
-                            label: criterion.label,
-                            points: criterion.points,
-                            maxPoints: criterion.points,
-                            found: true,
-                            keyword: keyword
-                        });
-                        found = true;
-                        break;
-                    }
-                }
-                
-                if (!found) {
-                    breakdown.push({
-                        label: criterion.label,
-                        points: 0,
-                        maxPoints: criterion.points,
-                        found: false
-                    });
-                }
-            });
-            
-            // Grammar and structure evaluation
-            maxScore += rubric.grammar;
-            const grammarScore = evaluateGrammar(userAnswer, wordCount, rubric.minWords);
-            totalScore += grammarScore;
-            breakdown.push({
-                label: "Grammar & Structure",
-                points: grammarScore,
-                maxPoints: rubric.grammar,
-                found: grammarScore > 0
-            });
-            
-            const finalScore = Math.round((totalScore / maxScore) * 100);
-            
-            return {
-                score: finalScore,
-                breakdown: breakdown,
-                totalPoints: totalScore,
-                maxPoints: maxScore,
-                wordCount: wordCount,
-                minWords: rubric.minWords
-            };
-        }
-
-        function evaluateGrammar(answer, wordCount, minWords) {
+            // Simple keyword-based scoring
             let score = 0;
-            const maxGrammarScore = 15;
+            const maxScore = 100;
             
-            // Length check (5 points)
-            if (wordCount >= minWords) {
-                score += 5;
-            } else if (wordCount >= minWords * 0.7) {
-                score += 3;
-            } else if (wordCount >= minWords * 0.5) {
-                score += 1;
+            // Word count score (20 points)
+            if (wordCount >= 30) score += 20;
+            else if (wordCount >= 20) score += 15;
+            else if (wordCount >= 10) score += 10;
+            else score += 5;
+            
+            // Keyword matching (60 points)
+            const keywords = {
+                "Define inertia": ['inertia', 'resist', 'change', 'motion', 'rest', 'direction', 'property', 'object'],
+                "types of force": ['contact', 'non-contact', 'friction', 'gravity', 'magnetic', 'force', 'touch'],
+                "Newton": ['law', 'force', 'acceleration', 'mass', 'momentum', 'motion', 'action', 'reaction'],
+                "mass and weight": ['mass', 'weight', 'scalar', 'vector', 'constant', 'varies', 'gravity', 'kilogram', 'newton']
+            };
+            
+            // Find relevant keywords
+            let relevantKeywords = [];
+            for (let key in keywords) {
+                if (question.toLowerCase().includes(key.toLowerCase())) {
+                    relevantKeywords = keywords[key];
+                    break;
+                }
             }
             
-            // Sentence structure (5 points)
-            const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 0);
-            if (sentences.length >= 2) {
-                score += 5;
-            } else if (sentences.length === 1 && wordCount > 10) {
-                score += 3;
+            if (relevantKeywords.length === 0) {
+                relevantKeywords = ['concept', 'explain', 'define', 'state', 'describe'];
             }
             
-            // Capitalization and punctuation (5 points)
-            const hasCapital = /^[A-Z]/.test(answer.trim());
-            const hasPunctuation = /[.!?]$/.test(answer.trim());
+            let keywordScore = 0;
+            relevantKeywords.forEach(keyword => {
+                if (lowerAnswer.includes(keyword)) {
+                    keywordScore += 60 / relevantKeywords.length;
+                }
+            });
+            score += Math.min(keywordScore, 60);
             
-            if (hasCapital) score += 2;
-            if (hasPunctuation) score += 3;
-            
-            return Math.min(score, maxGrammarScore);
-        }
-
-        function evaluateGenericAnswer(userAnswer) {
-            const wordCount = userAnswer.trim().split(/\s+/).length;
-            let score = 50; // Base score
-            
-            if (wordCount < 5) score = 20;
-            else if (wordCount < 10) score = 40;
-            else if (wordCount < 20) score = 60;
-            else score = 75;
+            // Structure score (20 points)
+            const sentences = userAnswer.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            if (sentences.length >= 3) score += 20;
+            else if (sentences.length >= 2) score += 15;
+            else if (sentences.length >= 1) score += 10;
+            else score += 5;
             
             return {
-                score: score,
-                breakdown: [
-                    { label: "Answer provided", points: score, maxPoints: 100, found: true }
-                ],
-                totalPoints: score,
-                maxPoints: 100,
+                score: Math.min(Math.round(score), 100),
                 wordCount: wordCount,
-                minWords: 15
+                relevantKeywords: relevantKeywords
             };
         }
 
-        function displayDetailedFeedback(evaluation) {
+        function displayFeedback(evaluation) {
             const scoreCircle = document.getElementById('score-circle');
             const feedbackText = document.getElementById('feedback-text');
             
@@ -1167,63 +1124,51 @@
                 scoreCircle.style.background = 'linear-gradient(145deg, #f44336, #d32f2f)';
             }
             
-            // Build detailed breakdown
-            let breakdownHTML = '<h3 style="color: #667eea; margin-bottom: 20px;">📊 Detailed Score Breakdown</h3>';
+            let feedbackHTML = '<h3 style="color: #667eea; margin-bottom: 20px;">📊 Detailed Evaluation</h3>';
             
-            breakdownHTML += '<div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px;">';
-            breakdownHTML += `<p style="font-size: 1.2em; margin-bottom: 15px;"><strong>Total: ${evaluation.totalPoints}/${evaluation.maxPoints} points (${evaluation.score}%)</strong></p>`;
-            breakdownHTML += `<p style="color: #666; margin-bottom: 10px;">Word Count: ${evaluation.wordCount} words (Minimum: ${evaluation.minWords})</p>`;
-            breakdownHTML += '</div>';
+            feedbackHTML += '<div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px;">';
+            feedbackHTML += `<p style="font-size: 1.2em; margin-bottom: 15px;"><strong>Your Score: ${evaluation.score}/100</strong></p>`;
+            feedbackHTML += `<p style="color: #666;">Word Count: ${evaluation.wordCount} words</p>`;
+            feedbackHTML += '</div>';
             
-            breakdownHTML += '<table style="width: 100%; border-collapse: collapse;">';
-            breakdownHTML += '<thead><tr style="background: #667eea; color: white;"><th style="padding: 12px; text-align: left; border-radius: 5px 0 0 0;">Criteria</th><th style="padding: 12px; text-align: center;">Points</th><th style="padding: 12px; text-align: center; border-radius: 0 5px 0 0;">Status</th></tr></thead>';
-            breakdownHTML += '<tbody>';
+            feedbackHTML += '<div style="background: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 20px;">';
+            feedbackHTML += '<h4 style="color: #1976D2; margin-bottom: 10px;">📝 Your Answer:</h4>';
+            feedbackHTML += `<p style="line-height: 1.8;">${currentState.userTranscript}</p>`;
+            feedbackHTML += '</div>';
             
-            evaluation.breakdown.forEach((item, index) => {
-                const bgColor = index % 2 === 0 ? '#f9f9f9' : 'white';
-                const statusIcon = item.found ? '✅' : '❌';
-                const statusColor = item.found ? '#4caf50' : '#f44336';
-                
-                breakdownHTML += `<tr style="background: ${bgColor};">`;
-                breakdownHTML += `<td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">
-                    <strong>${item.label}</strong>
-                    ${item.keyword ? `<br><span style="color: #666; font-size: 0.9em;">Found: "${item.keyword}"</span>` : ''}
-                </td>`;
-                breakdownHTML += `<td style="padding: 12px; text-align: center; border-bottom: 1px solid #e0e0e0;"><strong>${item.points}/${item.maxPoints}</strong></td>`;
-                breakdownHTML += `<td style="padding: 12px; text-align: center; border-bottom: 1px solid #e0e0e0; color: ${statusColor}; font-size: 1.5em;">${statusIcon}</td>`;
-                breakdownHTML += '</tr>';
-            });
+            feedbackHTML += '<div style="background: #f1f8e9; padding: 20px; border-radius: 10px; margin-bottom: 20px;">';
+            feedbackHTML += '<h4 style="color: #689F38; margin-bottom: 10px;">📖 Expected Answer:</h4>';
+            feedbackHTML += `<p style="line-height: 1.8;">${currentState.currentAnswer}</p>`;
+            feedbackHTML += '</div>';
             
-            breakdownHTML += '</tbody></table>';
+            feedbackHTML += '<div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 4px solid #ffc107;">';
+            feedbackHTML += '<h4 style="color: #856404; margin-bottom: 10px;">💡 Feedback:</h4>';
+            feedbackHTML += '<ul style="margin-left: 20px; line-height: 1.8;">';
             
-            // Add suggestions
-            breakdownHTML += '<div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #ffc107;">';
-            breakdownHTML += '<h4 style="color: #856404; margin-bottom: 10px;">💡 Suggestions for Improvement:</h4>';
-            breakdownHTML += '<ul style="margin-left: 20px; line-height: 1.8;">';
-            
-            const missed = evaluation.breakdown.filter(item => !item.found && item.label !== "Grammar & Structure");
-            if (missed.length > 0) {
-                missed.forEach(item => {
-                    breakdownHTML += `<li>Include information about: <strong>${item.label}</strong> (${item.maxPoints} points)</li>`;
-                });
+            if (evaluation.score >= 80) {
+                feedbackHTML += '<li><strong>Excellent work!</strong> You demonstrated strong understanding of the concept.</li>';
+                feedbackHTML += '<li>Your answer covered most key points effectively.</li>';
+            } else if (evaluation.score >= 60) {
+                feedbackHTML += '<li><strong>Good effort!</strong> You have basic understanding but can improve.</li>';
+                feedbackHTML += '<li>Try to include more key concepts and examples in your answer.</li>';
             } else {
-                breakdownHTML += '<li>Great job! You covered all key points. Keep practicing to improve your score further.</li>';
+                feedbackHTML += '<li><strong>Keep practicing!</strong> Review the expected answer carefully.</li>';
+                feedbackHTML += '<li>Focus on understanding key concepts before attempting again.</li>';
             }
             
-            if (evaluation.wordCount < evaluation.minWords) {
-                breakdownHTML += `<li>Try to write at least ${evaluation.minWords} words for a complete answer.</li>`;
+            if (evaluation.wordCount < 20) {
+                feedbackHTML += '<li>Try to elaborate more on your answer. Aim for at least 20-30 words for brief answers.</li>';
             }
             
-            breakdownHTML += '</ul></div>';
+            feedbackHTML += '</ul></div>';
             
-            feedbackText.innerHTML = breakdownHTML;
+            feedbackText.innerHTML = feedbackHTML;
         }
 
         function tryAgain() {
             document.getElementById('feedback-section').classList.remove('active');
             document.getElementById('answer-display').style.display = 'block';
             
-            // Clear previous attempt
             currentState.userTranscript = '';
             document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
             document.getElementById('recording-status').textContent = 'Ready to record';
@@ -1238,6 +1183,13 @@
             currentState.userTranscript = '';
             currentState.level = 'basic';
             
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.level === 'basic') {
+                    btn.classList.add('active');
+                }
+            });
+            
             updateBreadcrumb();
         }
 
@@ -1249,6 +1201,10 @@
                 document.getElementById('answer-display').style.display = 'block';
                 document.getElementById('recite-section').classList.remove('active');
                 document.getElementById('feedback-section').classList.remove('active');
+                
+                if (currentState.isRecording) {
+                    toggleRecording();
+                }
             } else if (currentState.lesson) {
                 currentState.lesson = null;
                 document.getElementById('question-selection').style.display = 'none';
@@ -1265,7 +1221,40 @@
             updateBreadcrumb();
         }
 
-        updateBreadcrumb();
+        function updateBreadcrumb() {
+            let breadcrumbText = 'Home';
+            
+            if (currentState.board === 'tn') {
+                breadcrumbText += ' > TN State Board';
+            } else if (currentState.board === 'cbse') {
+                breadcrumbText += ' > CBSE';
+            }
+            
+            if (currentState.medium === 'english') {
+                breadcrumbText += ' > English Medium';
+            } else if (currentState.medium === 'tamil') {
+                breadcrumbText += ' > Tamil Medium';
+            }
+            
+            if (currentState.grade) {
+                breadcrumbText += ' > Grade ' + currentState.grade;
+            }
+            
+            if (currentState.subject) {
+                breadcrumbText += ' > ' + currentState.subject.charAt(0).toUpperCase() + currentState.subject.slice(1);
+            }
+            
+            if (currentState.lesson) {
+                breadcrumbText += ' > Lesson ' + currentState.lesson;
+            }
+
+            if (currentState.question) {
+                breadcrumbText += ' > Question';
+            }
+            
+            document.getElementById('breadcrumb').textContent = breadcrumbText;
+            document.getElementById('backBtn').style.display = (currentState.grade || currentState.question) ? 'block' : 'none';
+        }
     </script>
 </body>
 </html>
