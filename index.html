@@ -381,18 +381,44 @@
             background: #ff9800;
         }
 
-        .transcription-box {
+        .transcription-area {
             background: white;
             padding: 20px;
             border-radius: 10px;
             margin-top: 20px;
-            min-height: 150px;
+            min-height: 200px;
             border: 2px solid #667eea;
             text-align: left;
+            position: relative;
+        }
+
+        .editable-transcription {
+            width: 100%;
+            min-height: 180px;
+            border: none;
             font-size: 1.1em;
-            line-height: 1.6;
-            max-height: 300px;
-            overflow-y: auto;
+            line-height: 1.8;
+            font-family: inherit;
+            resize: vertical;
+            padding: 10px;
+            outline: none;
+        }
+
+        .editable-transcription:focus {
+            background: #fffef0;
+        }
+
+        .voice-correction-mode {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #2196F3;
+            display: none;
+        }
+
+        .voice-correction-mode.active {
+            display: block;
         }
 
         .text-input-area {
@@ -418,6 +444,7 @@
             gap: 15px;
             justify-content: center;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
 
         .control-btn {
@@ -438,6 +465,21 @@
         .control-btn.resume {
             background: #4caf50;
             color: white;
+        }
+
+        .control-btn.correct {
+            background: #2196F3;
+            color: white;
+        }
+
+        .control-btn.clear {
+            background: #f44336;
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         .action-buttons {
@@ -611,6 +653,23 @@
             margin: 20px auto;
         }
 
+        .info-badge {
+            background: #e3f2fd;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.95em;
+            border-left: 4px solid #2196F3;
+            color: #1565C0;
+        }
+
+        .cursor-position-info {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+            text-align: right;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2em;
@@ -660,8 +719,8 @@
             100% { transform: rotate(360deg); }
         }
 
-        .highlight-text {
-            background: yellow;
+        .highlight-selection {
+            background: #ffeb3b;
             padding: 2px 4px;
             border-radius: 3px;
         }
@@ -671,7 +730,7 @@
     <div class="container">
         <header>
             <h1>🎓 Acharya108</h1>
-            <p class="tagline">Affordable Education for All - Advanced Learning with AI Evaluation</p>
+            <p class="tagline">Affordable Education for All - Enhanced Voice Learning System</p>
         </header>
 
         <div class="content-card">
@@ -765,7 +824,13 @@
 
                         <div id="recite-section" class="recite-section">
                             <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
-                                <strong>📢 Instructions:</strong> Choose input mode below. You can speak (voice mode) or type (keyboard mode). Complete your answer and submit for detailed evaluation.
+                                <strong>📢 Enhanced Voice Mode Instructions:</strong>
+                                <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                                    <li>Click microphone to record. Your text will NEVER disappear!</li>
+                                    <li>Click in the text area to place cursor anywhere and continue speaking</li>
+                                    <li>Select text, then click "Correct Selection" to re-speak that part only</li>
+                                    <li>Use Pause/Resume to take breaks without losing your progress</li>
+                                </ul>
                             </div>
 
                             <div class="input-mode-toggle">
@@ -782,10 +847,34 @@
                                 <div class="recording-controls" id="recordingControls" style="display: none;">
                                     <button class="control-btn pause" onclick="pauseRecording()">⏸️ Pause</button>
                                     <button class="control-btn resume" onclick="resumeRecording()" style="display: none;">▶️ Resume</button>
+                                    <button class="control-btn correct" onclick="startVoiceCorrection()">✏️ Correct Selection</button>
+                                    <button class="control-btn clear" onclick="clearTranscription()">🗑️ Clear All</button>
                                 </div>
                                 
-                                <div class="transcription-box" id="transcription">
-                                    Your answer will appear here as you speak...
+                                <div class="transcription-area">
+                                    <textarea 
+                                        id="transcription" 
+                                        class="editable-transcription" 
+                                        placeholder="Your answer will appear here as you speak. You can click to position cursor and continue speaking from that point..."
+                                        onclick="updateCursorInfo()"
+                                        onkeyup="updateCursorInfo()"
+                                    ></textarea>
+                                    <div class="cursor-position-info" id="cursorInfo">Click to position cursor</div>
+                                </div>
+
+                                <div class="voice-correction-mode" id="voiceCorrectionMode">
+                                    <strong>🎯 Voice Correction Mode Active</strong>
+                                    <p style="margin-top: 10px;">Selected text will be replaced when you speak. Click microphone to start correcting.</p>
+                                    <button class="control-btn" onclick="cancelVoiceCorrection()" style="margin-top: 10px; background: #999;">Cancel Correction</button>
+                                </div>
+
+                                <div class="info-badge">
+                                    <strong>💡 Pro Tips:</strong> 
+                                    <ul style="margin-left: 20px; margin-top: 8px; line-height: 1.6;">
+                                        <li>Your text is auto-saved - it won't disappear when pausing</li>
+                                        <li>Select any word/sentence and use "Correct Selection" to fix it by voice</li>
+                                        <li>You can manually edit text by clicking and typing too!</li>
+                                    </ul>
                                 </div>
                             </div>
 
@@ -830,7 +919,7 @@
     </div>
 
     <script>
-        // Enhanced evaluation rubrics for each question
+        // Enhanced evaluation rubrics
         const evaluationRubrics = {
             "Define inertia. Give its classification.": {
                 rubric: [
@@ -965,7 +1054,11 @@
             timerInterval: null,
             userTranscript: '',
             currentAnswer: '',
-            inputMode: 'voice'
+            inputMode: 'voice',
+            isCorrectingSelection: false,
+            selectionStart: 0,
+            selectionEnd: 0,
+            tempCorrectionText: ''
         };
 
         // Initialize event listeners
@@ -1024,18 +1117,54 @@
                 currentState.recognition.lang = 'en-US';
                 
                 currentState.recognition.onresult = function(event) {
-                    let transcript = '';
+                    const transcriptionBox = document.getElementById('transcription');
+                    let finalTranscript = '';
+                    
                     for (let i = event.resultIndex; i < event.results.length; i++) {
-                        transcript += event.results[i][0].transcript + ' ';
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        }
                     }
-                    currentState.userTranscript = transcript.trim();
-                    document.getElementById('transcription').textContent = currentState.userTranscript || 'Your answer will appear here as you speak...';
+                    
+                    if (finalTranscript) {
+                        if (currentState.isCorrectingSelection) {
+                            // Replace selected text with new speech
+                            const currentText = transcriptionBox.value;
+                            const beforeSelection = currentText.substring(0, currentState.selectionStart);
+                            const afterSelection = currentText.substring(currentState.selectionEnd);
+                            transcriptionBox.value = beforeSelection + finalTranscript.trim() + afterSelection;
+                            
+                            // Update cursor position
+                            const newPosition = beforeSelection.length + finalTranscript.trim().length;
+                            transcriptionBox.setSelectionRange(newPosition, newPosition);
+                            
+                            currentState.isCorrectingSelection = false;
+                            document.getElementById('voiceCorrectionMode').classList.remove('active');
+                        } else {
+                            // Insert at cursor position
+                            const cursorPos = transcriptionBox.selectionStart;
+                            const currentText = transcriptionBox.value;
+                            const beforeCursor = currentText.substring(0, cursorPos);
+                            const afterCursor = currentText.substring(cursorPos);
+                            
+                            transcriptionBox.value = beforeCursor + finalTranscript + afterCursor;
+                            
+                            // Update cursor position
+                            const newPosition = cursorPos + finalTranscript.length;
+                            transcriptionBox.setSelectionRange(newPosition, newPosition);
+                        }
+                        
+                        // Sync to state
+                        currentState.userTranscript = transcriptionBox.value;
+                        updateCursorInfo();
+                    }
                 };
 
                 currentState.recognition.onerror = function(event) {
                     console.error('Speech recognition error:', event.error);
-                    if (event.error !== 'no-speech') {
-                        document.getElementById('recording-status').textContent = 'Error: ' + event.error + ' - Click mic to try again';
+                    if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                        document.getElementById('recording-status').textContent = 'Error: ' + event.error + ' - Your text is saved. Click mic to retry.';
                     }
                 };
 
@@ -1050,11 +1179,38 @@
                 };
             }
 
-            // Text input sync
+            // Text input sync with auto-save
+            const transcriptionBox = document.getElementById('transcription');
+            transcriptionBox.addEventListener('input', function() {
+                currentState.userTranscript = this.value;
+                updateCursorInfo();
+            });
+
             document.getElementById('textInput').addEventListener('input', function() {
                 currentState.userTranscript = this.value;
             });
+
+            // Track selection for correction mode
+            transcriptionBox.addEventListener('select', function() {
+                currentState.selectionStart = this.selectionStart;
+                currentState.selectionEnd = this.selectionEnd;
+                updateCursorInfo();
+            });
         });
+
+        function updateCursorInfo() {
+            const transcriptionBox = document.getElementById('transcription');
+            const cursorPos = transcriptionBox.selectionStart;
+            const textLength = transcriptionBox.value.length;
+            const selectedLength = transcriptionBox.selectionEnd - transcriptionBox.selectionStart;
+            
+            let info = `Cursor: ${cursorPos} | Length: ${textLength}`;
+            if (selectedLength > 0) {
+                info += ` | Selected: ${selectedLength} characters`;
+            }
+            
+            document.getElementById('cursorInfo').textContent = info;
+        }
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(tab => {
@@ -1185,7 +1341,7 @@
                     <h3>📖 ${currentState.level.charAt(0).toUpperCase() + currentState.level.slice(1)} Level Answer</h3>
                     <p style="line-height: 2; margin-top: 15px;">${answer}</p>
                     <div class="key-terms">
-                        <strong>💡 Study Tip:</strong> Read this answer carefully. Pay attention to key terms and concepts. Try to memorize the structure and main points before reciting.
+                        <strong>💡 Study Tip:</strong> Read carefully. Pay attention to key terms. Try to memorize the structure before reciting.
                     </div>
                 `;
             }, 800);
@@ -1212,11 +1368,11 @@
             };
 
             const defaultAnswers = {
-                basic: "This is a basic level answer providing fundamental understanding. It includes key definitions and simple explanations suitable for beginners.",
-                elementary: "This elementary answer builds on basic concepts with detailed explanations, examples, and breaks down the concept into understandable parts.",
-                intermediate: "This intermediate answer provides comprehensive coverage with scientific explanations, formulas, and practical applications requiring good understanding of fundamentals.",
-                advanced: "This advanced answer includes in-depth scientific reasoning, mathematical derivations, and real-world applications demonstrating mastery of the subject.",
-                expert: "This expert answer provides exhaustive analysis with quantum mechanical considerations, advanced mathematical formulations, and connections to cutting-edge research."
+                basic: "This is a basic level answer providing fundamental understanding with key definitions and simple explanations.",
+                elementary: "This elementary answer builds on basic concepts with detailed explanations and examples.",
+                intermediate: "This intermediate answer provides comprehensive coverage with scientific explanations and formulas.",
+                advanced: "This advanced answer includes in-depth reasoning, mathematical derivations, and real-world applications.",
+                expert: "This expert answer provides exhaustive analysis with advanced formulations and cutting-edge research connections."
             };
 
             if (answers[question] && answers[question][level]) {
@@ -1237,10 +1393,9 @@
                 document.getElementById('voice-mode').style.display = 'block';
                 document.getElementById('keyboard-mode').classList.remove('active');
                 
-                // Sync text input to transcription if switching modes
-                if (currentState.userTranscript) {
-                    document.getElementById('transcription').textContent = currentState.userTranscript;
-                }
+                // Sync from keyboard to voice
+                document.getElementById('transcription').value = currentState.userTranscript;
+                updateCursorInfo();
             } else {
                 document.getElementById('voice-mode').style.display = 'none';
                 document.getElementById('keyboard-mode').classList.add('active');
@@ -1250,8 +1405,8 @@
                     toggleRecording();
                 }
                 
-                // Sync transcription to text input
-                document.getElementById('textInput').value = currentState.userTranscript || '';
+                // Sync from voice to keyboard
+                document.getElementById('textInput').value = currentState.userTranscript;
             }
         }
 
@@ -1259,17 +1414,21 @@
             document.getElementById('answer-display').style.display = 'none';
             document.getElementById('recite-section').classList.add('active');
             
-            // Reset
-            currentState.userTranscript = '';
+            // DON'T reset userTranscript - preserve previous content
             currentState.timeRemaining = 180;
             currentState.isRecording = false;
             currentState.isPaused = false;
-            document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
-            document.getElementById('textInput').value = '';
+            currentState.isCorrectingSelection = false;
+            
+            // Show existing content if any
+            document.getElementById('transcription').value = currentState.userTranscript || '';
+            document.getElementById('textInput').value = currentState.userTranscript || '';
             document.getElementById('recording-status').textContent = 'Ready to record. Click the microphone!';
             document.getElementById('micBtn').classList.remove('recording', 'paused');
             document.getElementById('recordingControls').style.display = 'none';
+            document.getElementById('voiceCorrectionMode').classList.remove('active');
             updateTimer();
+            updateCursorInfo();
         }
 
         function toggleRecording() {
@@ -1285,12 +1444,15 @@
             if (!currentState.isRecording) {
                 // Start recording
                 try {
+                    // Sync current text to state before starting
+                    currentState.userTranscript = document.getElementById('transcription').value;
+                    
                     currentState.recognition.start();
                     currentState.isRecording = true;
                     currentState.isPaused = false;
                     micBtn.classList.add('recording');
                     micBtn.classList.remove('paused');
-                    status.textContent = '🔴 Recording... Speak now!';
+                    status.textContent = '🔴 Recording... Speak now! Text will appear at cursor position.';
                     controls.style.display = 'flex';
                     
                     // Start timer
@@ -1300,12 +1462,12 @@
                         
                         if (currentState.timeRemaining <= 0) {
                             toggleRecording();
-                            alert('⏰ Time is up! Your answer has been recorded.');
+                            alert('⏰ Time is up! Your answer has been saved.');
                         }
                     }, 1000);
                 } catch (error) {
                     console.error('Failed to start recording:', error);
-                    status.textContent = 'Error starting recording. Please try again.';
+                    status.textContent = 'Error starting recording. Your text is saved. Try again.';
                 }
             } else {
                 // Stop recording completely
@@ -1336,7 +1498,7 @@
             currentState.isPaused = true;
             document.getElementById('micBtn').classList.remove('recording');
             document.getElementById('micBtn').classList.add('paused');
-            document.getElementById('recording-status').textContent = '⏸️ Paused. Click Resume to continue.';
+            document.getElementById('recording-status').textContent = '⏸️ Paused. Your text is saved. Click Resume to continue.';
             
             document.querySelector('.control-btn.pause').style.display = 'none';
             document.querySelector('.control-btn.resume').style.display = 'block';
@@ -1344,6 +1506,9 @@
             if (currentState.timerInterval) {
                 clearInterval(currentState.timerInterval);
             }
+            
+            // Ensure text is saved
+            currentState.userTranscript = document.getElementById('transcription').value;
         }
 
         function resumeRecording() {
@@ -1356,7 +1521,7 @@
             currentState.isPaused = false;
             document.getElementById('micBtn').classList.add('recording');
             document.getElementById('micBtn').classList.remove('paused');
-            document.getElementById('recording-status').textContent = '🔴 Recording... Speak now!';
+            document.getElementById('recording-status').textContent = '🔴 Recording... Continue speaking!';
             
             document.querySelector('.control-btn.pause').style.display = 'block';
             document.querySelector('.control-btn.resume').style.display = 'none';
@@ -1371,6 +1536,43 @@
                     alert('⏰ Time is up!');
                 }
             }, 1000);
+        }
+
+        function startVoiceCorrection() {
+            const transcriptionBox = document.getElementById('transcription');
+            const selectedText = transcriptionBox.value.substring(
+                transcriptionBox.selectionStart,
+                transcriptionBox.selectionEnd
+            );
+            
+            if (!selectedText || selectedText.trim().length === 0) {
+                alert('⚠️ Please select the text you want to correct first!\n\nClick and drag to select any word or sentence, then click "Correct Selection".');
+                return;
+            }
+            
+            currentState.isCorrectingSelection = true;
+            currentState.selectionStart = transcriptionBox.selectionStart;
+            currentState.selectionEnd = transcriptionBox.selectionEnd;
+            
+            document.getElementById('voiceCorrectionMode').classList.add('active');
+            document.getElementById('recording-status').textContent = `🎯 Correction Mode: Will replace "${selectedText}" - Click mic to speak the correction`;
+            
+            // Highlight selection
+            transcriptionBox.focus();
+        }
+
+        function cancelVoiceCorrection() {
+            currentState.isCorrectingSelection = false;
+            document.getElementById('voiceCorrectionMode').classList.remove('active');
+            document.getElementById('recording-status').textContent = 'Ready to record';
+        }
+
+        function clearTranscription() {
+            if (confirm('⚠️ Are you sure you want to clear all your answer text?\n\nThis cannot be undone!')) {
+                document.getElementById('transcription').value = '';
+                currentState.userTranscript = '';
+                updateCursorInfo();
+            }
         }
 
         function updateTimer() {
@@ -1397,20 +1599,23 @@
                 clearInterval(currentState.timerInterval);
             }
             
+            // Save current text before hiding
+            currentState.userTranscript = document.getElementById('transcription').value;
+            
             document.getElementById('recite-section').classList.remove('active');
             document.getElementById('answer-display').style.display = 'block';
             
-            currentState.userTranscript = '';
-            document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
-            document.getElementById('textInput').value = '';
             document.getElementById('recording-status').textContent = 'Ready to record';
             document.getElementById('micBtn').classList.remove('recording', 'paused');
+            document.getElementById('voiceCorrectionMode').classList.remove('active');
         }
 
         function submitForEvaluation() {
             // Get answer from active input mode
             if (currentState.inputMode === 'keyboard') {
                 currentState.userTranscript = document.getElementById('textInput').value;
+            } else {
+                currentState.userTranscript = document.getElementById('transcription').value;
             }
             
             if (!currentState.userTranscript || currentState.userTranscript.trim().length < 10) {
@@ -1438,12 +1643,11 @@
             const rubric = evaluationRubrics[question];
             
             if (!rubric) {
-                // Fallback to basic evaluation
                 return {
                     score: 50,
                     rubricResults: [],
                     grammarScore: 5,
-                    feedback: "Detailed rubric not available for this question. Basic evaluation applied."
+                    feedback: "Detailed rubric not available for this question."
                 };
             }
 
@@ -1451,20 +1655,17 @@
             let totalScore = 0;
             let rubricResults = [];
             
-            // Evaluate each rubric item
             rubric.rubric.forEach(item => {
                 let itemScore = 0;
                 let foundKeywords = [];
                 let missingKeywords = [];
                 let status = 'missing';
                 
-                // Check required keywords first
                 const hasRequired = item.requiredKeywords.every(kw => 
                     lowerAnswer.includes(kw.toLowerCase())
                 );
                 
                 if (hasRequired) {
-                    // Check all keywords
                     item.keywords.forEach(keyword => {
                         if (lowerAnswer.includes(keyword.toLowerCase())) {
                             foundKeywords.push(keyword);
@@ -1473,7 +1674,6 @@
                         }
                     });
                     
-                    // Calculate item score based on keyword coverage
                     const coverage = foundKeywords.length / item.keywords.length;
                     
                     if (coverage >= 0.7) {
@@ -1487,7 +1687,6 @@
                         status = 'partial';
                     }
                 } else {
-                    // Required keywords missing
                     item.keywords.forEach(keyword => {
                         if (lowerAnswer.includes(keyword.toLowerCase())) {
                             foundKeywords.push(keyword);
@@ -1496,7 +1695,6 @@
                         }
                     });
                     
-                    // Minimal partial credit
                     if (foundKeywords.length > 0) {
                         itemScore = item.points * 0.2;
                         status = 'partial';
@@ -1514,17 +1712,15 @@
                 });
             });
             
-            // Grammar and structure evaluation (10 points)
+            // Grammar evaluation
             let grammarScore = 0;
             const sentences = userAnswer.split(/[.!?]+/).filter(s => s.trim().length > 10);
             const wordCount = userAnswer.trim().split(/\s+/).length;
             
-            // Sentence structure (5 points)
             if (sentences.length >= 3) grammarScore += 5;
             else if (sentences.length >= 2) grammarScore += 3;
             else if (sentences.length >= 1) grammarScore += 1;
             
-            // Word count adequacy (5 points)
             if (wordCount >= 30) grammarScore += 5;
             else if (wordCount >= 20) grammarScore += 3;
             else if (wordCount >= 10) grammarScore += 1;
@@ -1547,7 +1743,6 @@
             
             scoreCircle.textContent = evaluation.score + '%';
             
-            // Color based on score
             if (evaluation.score >= 80) {
                 scoreCircle.style.background = 'linear-gradient(145deg, #4caf50, #45a049)';
             } else if (evaluation.score >= 60) {
@@ -1572,12 +1767,12 @@
             feedbackHTML += '</div>';
             feedbackHTML += '</div>';
             
-            // Detailed rubric breakdown
+            // Rubric breakdown
             if (evaluation.rubricResults && evaluation.rubricResults.length > 0) {
                 feedbackHTML += '<div class="rubric-breakdown">';
                 feedbackHTML += '<h3 style="color: #667eea; margin-bottom: 20px;">🎯 Detailed Evaluation Breakdown</h3>';
                 
-                evaluation.rubricResults.forEach((result, index) => {
+                evaluation.rubricResults.forEach((result) => {
                     const percentage = Math.round((result.earnedPoints / result.points) * 100);
                     
                     feedbackHTML += `<div class="rubric-item ${result.status}">`;
@@ -1628,27 +1823,21 @@
             
             if (evaluation.score >= 80) {
                 feedbackHTML += '<li><strong>Excellent work!</strong> You demonstrated strong understanding of key concepts.</li>';
-                feedbackHTML += '<li>Keep practicing to maintain this high level of performance.</li>';
             } else if (evaluation.score >= 60) {
                 feedbackHTML += '<li><strong>Good effort!</strong> You covered several important points.</li>';
-                feedbackHTML += '<li>Focus on including all required keywords and concepts mentioned in the expected answer.</li>';
+                feedbackHTML += '<li>Focus on including all required keywords mentioned in the expected answer.</li>';
             } else {
                 feedbackHTML += '<li><strong>Keep practicing!</strong> Review the expected answer carefully.</li>';
                 feedbackHTML += '<li>Pay special attention to the missing keywords highlighted above.</li>';
             }
             
-            // Specific recommendations based on rubric
             const missingConcepts = evaluation.rubricResults.filter(r => r.status === 'missing' || r.earnedPoints < r.points * 0.5);
             if (missingConcepts.length > 0) {
                 feedbackHTML += '<li><strong>Key concepts to study:</strong> ' + missingConcepts.map(c => c.concept).join(', ') + '</li>';
             }
             
             if (evaluation.wordCount < 20) {
-                feedbackHTML += '<li>Try to elaborate more. Aim for at least 30-40 words for brief answers.</li>';
-            }
-            
-            if (evaluation.sentenceCount < 3) {
-                feedbackHTML += '<li>Structure your answer in multiple sentences for better clarity.</li>';
+                feedbackHTML += '<li>Try to elaborate more. Aim for at least 30-40 words.</li>';
             }
             
             feedbackHTML += '</ul></div>';
@@ -1660,8 +1849,7 @@
             document.getElementById('feedback-section').classList.remove('active');
             document.getElementById('answer-display').style.display = 'block';
             
-            // Keep the previous answer visible for reference
-            // Don't reset userTranscript
+            // Keep the previous answer for reference - don't clear it
         }
 
         function nextQuestion() {
@@ -1680,7 +1868,7 @@
                 }
             });
             
-            document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
+            document.getElementById('transcription').value = '';
             document.getElementById('textInput').value = '';
             
             updateBreadcrumb();
