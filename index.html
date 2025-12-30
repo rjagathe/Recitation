@@ -410,7 +410,6 @@
 
         .editable-transcription.recording-active {
             background: #fff5f5;
-            cursor: not-allowed;
         }
 
         .voice-correction-mode {
@@ -835,7 +834,7 @@
                                     <li>Click in the text area to place cursor anywhere and continue speaking</li>
                                     <li>Select text, then click "Correct Selection" to re-speak that part only</li>
                                     <li>Use Pause/Resume to take breaks without losing your progress</li>
-                                    <li>Keyboard is disabled during recording to prevent duplicate input</li>
+                                    <li>Text area is read-only during recording to prevent duplicate input</li>
                                 </ul>
                             </div>
 
@@ -879,7 +878,7 @@
                                     <ul style="margin-left: 20px; margin-top: 8px; line-height: 1.6;">
                                         <li>Your text is auto-saved - it won't disappear when pausing</li>
                                         <li>Select any word/sentence and use "Correct Selection" to fix it by voice</li>
-                                        <li>Keyboard is disabled during recording to prevent duplicates</li>
+                                        <li>Text area is read-only during recording to prevent duplicates</li>
                                         <li>Pause recording to manually edit text with keyboard</li>
                                     </ul>
                                 </div>
@@ -1458,8 +1457,8 @@
                     currentState.userTranscript = transcriptionBox.value;
                     currentState.lastProcessedResultIndex = -1;  // Reset tracking
                     
-                    // Make textarea readonly to prevent keyboard popup on mobile
-                    transcriptionBox.readOnly = false;  // Allow cursor positioning but discourage keyboard
+                    // Make textarea readonly to prevent keyboard popup and duplicate input
+                    transcriptionBox.readOnly = true;
                     transcriptionBox.classList.add('recording-active');
                     
                     currentState.recognition.start();
@@ -1546,8 +1545,8 @@
                 currentState.userTranscript = transcriptionBox.value;
                 currentState.lastProcessedResultIndex = -1;  // Reset to avoid skipping
                 
-                // Disable keyboard again
-                transcriptionBox.readOnly = false;
+                // Make readonly again to prevent duplicate input
+                transcriptionBox.readOnly = true;
                 transcriptionBox.classList.add('recording-active');
                 
                 currentState.recognition.start();
