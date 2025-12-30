@@ -309,12 +309,47 @@
             animation: pulse 1s infinite;
         }
 
+        .input-mode-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .mode-btn {
+            padding: 12px 25px;
+            background: white;
+            border: 3px solid #667eea;
+            color: #667eea;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
         .voice-input-area {
             background: #f0f4ff;
             padding: 30px;
             border-radius: 12px;
             border: 3px dashed #667eea;
             text-align: center;
+        }
+
+        .keyboard-input-area {
+            background: #f0f4ff;
+            padding: 30px;
+            border-radius: 12px;
+            border: 3px solid #667eea;
+            display: none;
+        }
+
+        .keyboard-input-area.active {
+            display: block;
         }
 
         .mic-button {
@@ -342,6 +377,10 @@
             animation: pulse 1.5s infinite;
         }
 
+        .mic-button.paused {
+            background: #ff9800;
+        }
+
         .transcription-box {
             background: white;
             padding: 20px;
@@ -354,6 +393,51 @@
             line-height: 1.6;
             max-height: 300px;
             overflow-y: auto;
+        }
+
+        .text-input-area {
+            width: 100%;
+            min-height: 200px;
+            padding: 20px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 1.1em;
+            line-height: 1.6;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .text-input-area:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .recording-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .control-btn.pause {
+            background: #ff9800;
+            color: white;
+        }
+
+        .control-btn.resume {
+            background: #4caf50;
+            color: white;
         }
 
         .action-buttons {
@@ -431,6 +515,85 @@
             box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
         }
 
+        .rubric-breakdown {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .rubric-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .rubric-item.found {
+            border-color: #4caf50;
+            background: #f1f8e9;
+        }
+
+        .rubric-item.partial {
+            border-color: #ff9800;
+            background: #fff3e0;
+        }
+
+        .rubric-item.missing {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+
+        .rubric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .keyword-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .keyword-badge.found {
+            background: #4caf50;
+            color: white;
+        }
+
+        .keyword-badge.missing {
+            background: #f44336;
+            color: white;
+        }
+
+        .comparison-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .comparison-box {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .comparison-box h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
         .loading {
             text-align: center;
             padding: 40px;
@@ -454,6 +617,9 @@
             }
             .level-selector {
                 flex-direction: column;
+            }
+            .comparison-view {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -493,13 +659,19 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .highlight-text {
+            background: yellow;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🎓 Acharya108</h1>
-            <p class="tagline">Affordable Education for All - Laws of Motion Learning System</p>
+            <p class="tagline">Affordable Education for All - Advanced Learning with AI Evaluation</p>
         </header>
 
         <div class="content-card">
@@ -593,18 +765,33 @@
 
                         <div id="recite-section" class="recite-section">
                             <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
-                                <strong>📢 Instructions:</strong> Click the microphone to record. Recite the answer you memorized. Try to include all key points!
+                                <strong>📢 Instructions:</strong> Choose input mode below. You can speak (voice mode) or type (keyboard mode). Complete your answer and submit for detailed evaluation.
+                            </div>
+
+                            <div class="input-mode-toggle">
+                                <button class="mode-btn active" onclick="switchInputMode('voice')">🎤 Voice Mode</button>
+                                <button class="mode-btn" onclick="switchInputMode('keyboard')">⌨️ Keyboard Mode</button>
                             </div>
 
                             <div id="voice-mode" class="voice-input-area">
                                 <div class="timer-display" id="timer">3:00</div>
-                                <h3 style="margin-bottom: 15px;">Click microphone to start/stop recording</h3>
+                                <h3 style="margin-bottom: 15px;">Click microphone to start/pause recording</h3>
                                 <button class="mic-button" id="micBtn" onclick="toggleRecording()">🎤</button>
                                 <p id="recording-status" style="color: #667eea; font-weight: bold; margin-bottom: 15px;">Ready to record</p>
+                                
+                                <div class="recording-controls" id="recordingControls" style="display: none;">
+                                    <button class="control-btn pause" onclick="pauseRecording()">⏸️ Pause</button>
+                                    <button class="control-btn resume" onclick="resumeRecording()" style="display: none;">▶️ Resume</button>
+                                </div>
                                 
                                 <div class="transcription-box" id="transcription">
                                     Your answer will appear here as you speak...
                                 </div>
+                            </div>
+
+                            <div id="keyboard-mode" class="keyboard-input-area">
+                                <h3 style="margin-bottom: 15px; color: #667eea;">Type your answer below:</h3>
+                                <textarea id="textInput" class="text-input-area" placeholder="Start typing your answer here..."></textarea>
                             </div>
 
                             <div class="action-buttons">
@@ -614,10 +801,11 @@
                         </div>
 
                         <div id="feedback-section" class="feedback-section">
-                            <h2 style="color: #667eea; margin-bottom: 20px;">📊 Your Performance</h2>
+                            <h2 style="color: #667eea; margin-bottom: 20px;">📊 Your Performance Report</h2>
                             
                             <div class="score-display">
                                 <div class="score-circle" id="score-circle">85%</div>
+                                <p style="margin-top: 15px; font-size: 1.2em; color: #666;">Overall Score</p>
                             </div>
 
                             <div id="feedback-text" style="margin-top: 25px;">
@@ -642,6 +830,100 @@
     </div>
 
     <script>
+        // Enhanced evaluation rubrics for each question
+        const evaluationRubrics = {
+            "Define inertia. Give its classification.": {
+                rubric: [
+                    {
+                        id: 1,
+                        concept: "Definition of Inertia",
+                        keywords: ["inertia", "property", "resist", "change", "motion", "state"],
+                        requiredKeywords: ["inertia", "resist"],
+                        points: 45,
+                        description: "Property of an object to resist changes in its state of motion"
+                    },
+                    {
+                        id: 2,
+                        concept: "Classification Statement",
+                        keywords: ["classified", "three", "types", "kinds", "categories"],
+                        requiredKeywords: ["three", "types"],
+                        points: 10,
+                        description: "It is classified into three types"
+                    },
+                    {
+                        id: 3,
+                        concept: "Inertia of Rest",
+                        keywords: ["rest", "stationary", "remain", "stay"],
+                        requiredKeywords: ["rest"],
+                        points: 15,
+                        description: "Objects at rest stay at rest"
+                    },
+                    {
+                        id: 4,
+                        concept: "Inertia of Motion",
+                        keywords: ["motion", "moving", "keep", "continue"],
+                        requiredKeywords: ["motion"],
+                        points: 15,
+                        description: "Moving objects keep moving"
+                    },
+                    {
+                        id: 5,
+                        concept: "Inertia of Direction",
+                        keywords: ["direction", "straight", "line", "path"],
+                        requiredKeywords: ["direction"],
+                        points: 15,
+                        description: "Objects continue in the same direction"
+                    }
+                ],
+                grammarPoints: 10
+            },
+            "Classify the types of force based on their application.": {
+                rubric: [
+                    {
+                        id: 1,
+                        concept: "Classification Statement",
+                        keywords: ["classified", "two", "types", "kinds", "based", "application"],
+                        requiredKeywords: ["two", "types"],
+                        points: 10,
+                        description: "Forces are classified into two types"
+                    },
+                    {
+                        id: 2,
+                        concept: "Contact Forces",
+                        keywords: ["contact", "touch", "physical", "direct"],
+                        requiredKeywords: ["contact"],
+                        points: 20,
+                        description: "Contact forces require physical touch"
+                    },
+                    {
+                        id: 3,
+                        concept: "Contact Force Examples",
+                        keywords: ["friction", "tension", "normal", "applied"],
+                        requiredKeywords: ["friction"],
+                        points: 20,
+                        description: "Examples: friction, tension, normal force"
+                    },
+                    {
+                        id: 4,
+                        concept: "Non-Contact Forces",
+                        keywords: ["non-contact", "distance", "without", "touch", "field"],
+                        requiredKeywords: ["non-contact"],
+                        points: 20,
+                        description: "Non-contact forces act at a distance"
+                    },
+                    {
+                        id: 5,
+                        concept: "Non-Contact Force Examples",
+                        keywords: ["gravitational", "magnetic", "electrostatic", "gravity", "magnet"],
+                        requiredKeywords: ["gravitational"],
+                        points: 30,
+                        description: "Examples: gravitational, magnetic, electrostatic"
+                    }
+                ],
+                grammarPoints: 10
+            }
+        };
+
         // Questions database
         const questions = {
             brief: [
@@ -677,11 +959,13 @@
             question: null,
             level: 'basic',
             isRecording: false,
+            isPaused: false,
             recognition: null,
             timeRemaining: 180,
             timerInterval: null,
             userTranscript: '',
-            currentAnswer: ''
+            currentAnswer: '',
+            inputMode: 'voice'
         };
 
         // Initialize event listeners
@@ -750,16 +1034,26 @@
 
                 currentState.recognition.onerror = function(event) {
                     console.error('Speech recognition error:', event.error);
-                    document.getElementById('recording-status').textContent = 'Error: ' + event.error + ' - Click mic to try again';
+                    if (event.error !== 'no-speech') {
+                        document.getElementById('recording-status').textContent = 'Error: ' + event.error + ' - Click mic to try again';
+                    }
                 };
 
                 currentState.recognition.onend = function() {
-                    if (currentState.isRecording) {
-                        // Automatically restart if still in recording mode
-                        currentState.recognition.start();
+                    if (currentState.isRecording && !currentState.isPaused) {
+                        try {
+                            currentState.recognition.start();
+                        } catch(e) {
+                            console.log('Recognition restart handled');
+                        }
                     }
                 };
             }
+
+            // Text input sync
+            document.getElementById('textInput').addEventListener('input', function() {
+                currentState.userTranscript = this.value;
+            });
         });
 
         function switchTab(tabName) {
@@ -883,7 +1177,6 @@
             const answerDisplay = document.getElementById('answer-display');
             answerDisplay.innerHTML = '<div class="loading"><div class="spinner"></div><p>Generating answer...</p></div>';
 
-            // Simulate loading and generate answer
             setTimeout(() => {
                 const answer = getDemoAnswer(currentState.level);
                 currentState.currentAnswer = answer;
@@ -892,7 +1185,7 @@
                     <h3>📖 ${currentState.level.charAt(0).toUpperCase() + currentState.level.slice(1)} Level Answer</h3>
                     <p style="line-height: 2; margin-top: 15px;">${answer}</p>
                     <div class="key-terms">
-                        <strong>💡 Study Tip:</strong> Read this answer carefully and try to understand all key concepts before clicking "Start Reciting". Take your time!
+                        <strong>💡 Study Tip:</strong> Read this answer carefully. Pay attention to key terms and concepts. Try to memorize the structure and main points before reciting.
                     </div>
                 `;
             }, 800);
@@ -901,37 +1194,64 @@
         function getDemoAnswer(level) {
             const question = currentState.question.text;
             
-            // Different answers based on question and level
             const answers = {
                 "Define inertia. Give its classification.": {
                     basic: "Inertia is the property of an object to resist changes in its state of motion. It is classified into three types: inertia of rest (objects at rest stay at rest), inertia of motion (moving objects keep moving), and inertia of direction (objects continue in the same direction).",
                     elementary: "Inertia is the tendency of a body to maintain its state of rest or uniform motion. The three types are: (1) Inertia of rest - objects at rest tend to stay at rest unless acted upon by an external force. (2) Inertia of motion - moving objects tend to keep moving at the same speed and direction. (3) Inertia of direction - objects moving in a straight line tend to continue in that direction unless disturbed.",
-                    intermediate: "Inertia is a fundamental property of matter that describes the resistance of an object to any change in its velocity. This property is directly proportional to the mass of the object. The three classifications are: Inertia of rest keeps stationary objects stationary unless acted upon by external force (example: a book on a table). Inertia of motion maintains constant velocity in moving objects (example: a moving car continues to move forward even when the engine is turned off). Inertia of direction preserves the direction of motion unless external force intervenes (example: mud flying off from a rotating wheel moves tangentially).",
-                    advanced: "Inertia represents the quantitative measure of an object's resistance to acceleration, directly proportional to its mass as described in Newton's First Law of Motion. The three types are: (1) Inertia of rest - exemplified by a book remaining on a table until an external force is applied, due to molecular cohesion and intermolecular forces maintaining the object's position. (2) Inertia of motion - demonstrated when passengers lurch forward during sudden braking, as their bodies tend to maintain their state of motion according to the law of conservation of momentum. (3) Inertia of direction - observed when a stone tied to a string moves tangentially upon release, as it maintains its instantaneous velocity direction due to absence of centripetal force.",
-                    expert: "Inertia is an intrinsic property of matter that manifests as resistance to changes in velocity, mathematically represented by mass in Newton's second law (F=ma). The classification into three types reflects different observational frames: Static inertia (rest) derives from molecular forces and intermolecular attractions maintaining positional equilibrium in the center of mass frame. Kinetic inertia (motion) reflects momentum conservation (p=mv) where objects maintain linear velocity absent external forces, as described by Galilean relativity. Directional inertia emerges from vector properties of velocity, requiring centripetal force (F=mv²/r) for circular motion. This principle extends to Einstein's general relativity where inertial mass equals gravitational mass, leading to the equivalence principle."
+                    intermediate: "Inertia is a fundamental property of matter that describes the resistance of an object to any change in its velocity. This property is directly proportional to the mass of the object. The three classifications are: Inertia of rest keeps stationary objects stationary unless acted upon by external force. Inertia of motion maintains constant velocity in moving objects. Inertia of direction preserves the direction of motion unless external force intervenes.",
+                    advanced: "Inertia represents the quantitative measure of an object's resistance to acceleration, directly proportional to its mass as described in Newton's First Law of Motion. The three types are: (1) Inertia of rest - exemplified by a book remaining on a table until an external force is applied. (2) Inertia of motion - demonstrated when passengers lurch forward during sudden braking. (3) Inertia of direction - observed when a stone tied to a string moves tangentially upon release.",
+                    expert: "Inertia is an intrinsic property of matter that manifests as resistance to changes in velocity, mathematically represented by mass in Newton's second law (F=ma). The classification reflects different observational frames: Static inertia (rest) derives from molecular forces maintaining positional equilibrium. Kinetic inertia (motion) reflects momentum conservation (p=mv). Directional inertia emerges from vector properties of velocity, requiring centripetal force (F=mv²/r) for circular motion."
                 },
                 "Classify the types of force based on their application.": {
                     basic: "Forces are classified into two types based on application: Contact forces require physical touch between objects (examples: friction, tension, normal force). Non-contact forces act at a distance without physical contact (examples: gravitational force, magnetic force, electrostatic force).",
-                    elementary: "Based on application, forces are classified into: (1) Contact Forces - These forces act only when objects are in physical contact. Examples include friction (opposes motion), tension (pulling force in strings), normal force (perpendicular support force), and applied force. (2) Non-Contact Forces - These forces can act even without physical touch. Examples include gravitational force (attraction between masses), magnetic force (between magnets), and electrostatic force (between charged objects).",
-                    intermediate: "Forces are categorized based on their mode of application: Contact forces require direct physical interaction between objects. These include friction (parallel to surface, opposes relative motion), normal force (perpendicular to surface, prevents penetration), tension (transmitted through rope/string), air resistance, and muscular force. Non-contact or field forces act through space without direct contact. These include gravitational force (universal attraction between all masses following F=Gm₁m₂/r²), electromagnetic force (between charged particles), and nuclear forces (strong and weak forces at atomic level).",
-                    advanced: "Classification of forces based on application yields two fundamental categories: Contact forces arise from electromagnetic interactions at the molecular level during physical contact. These include friction (static and kinetic, depending on coefficient μ and normal force), normal force (electromagnetic repulsion between electron clouds), tension (internal cohesive forces in constrained objects), and viscous forces in fluids. Non-contact forces represent fundamental interactions: gravitational force (F=Gm₁m₂/r², infinite range, always attractive), electromagnetic force (Coulomb's law F=kq₁q₂/r², infinite range, can be attractive or repulsive), strong nuclear force (binding nucleons, range ~10⁻¹⁵m), and weak nuclear force (responsible for radioactive decay).",
-                    expert: "Force classification based on application reflects the four fundamental interactions in nature. Contact forces are macroscopic manifestations of electromagnetic interaction at the quantum level. Friction emerges from van der Waals forces and mechanical interlocking at microscopic scales, describable through Coulomb and Amontons-Coulomb laws with corrections for adhesion. Normal force represents Pauli exclusion principle preventing electron orbital overlap. Non-contact forces include: Gravitation (gauge boson: graviton theoretically, field theory described by Einstein's general relativity with stress-energy tensor T_μν), Electromagnetic (photon-mediated, unified by Maxwell's equations and QED), Strong force (gluon-mediated, confined by QCD asymptotic freedom), Weak force (W±, Z⁰ bosons, responsible for beta decay via electroweak unification SU(2)×U(1))."
+                    elementary: "Based on application, forces are classified into: (1) Contact Forces - These forces act only when objects are in physical contact. Examples include friction, tension, normal force, and applied force. (2) Non-Contact Forces - These forces can act even without physical touch. Examples include gravitational force, magnetic force, and electrostatic force.",
+                    intermediate: "Forces are categorized based on their mode of application: Contact forces require direct physical interaction. These include friction (opposes motion), normal force (perpendicular to surface), tension (through rope/string), and air resistance. Non-contact or field forces act through space without direct contact. These include gravitational force (universal attraction between masses), electromagnetic force (between charged particles), and nuclear forces.",
+                    advanced: "Classification of forces based on application yields two fundamental categories: Contact forces arise from electromagnetic interactions at the molecular level. These include friction (static and kinetic), normal force (electromagnetic repulsion), tension (internal cohesive forces), and viscous forces. Non-contact forces represent fundamental interactions: gravitational force (infinite range, always attractive), electromagnetic force (infinite range, attractive or repulsive), strong nuclear force (binding nucleons), and weak nuclear force (radioactive decay).",
+                    expert: "Force classification reflects four fundamental interactions. Contact forces are macroscopic manifestations of electromagnetic interaction at quantum level. Friction emerges from van der Waals forces and mechanical interlocking. Normal force represents Pauli exclusion principle. Non-contact forces include: Gravitation (field theory by general relativity), Electromagnetic (photon-mediated, unified by QED), Strong force (gluon-mediated, QCD), Weak force (W±, Z⁰ bosons, electroweak unification)."
                 }
             };
 
-            // Default answer if specific question not found
             const defaultAnswers = {
-                basic: "This is a basic level answer that provides fundamental understanding of the concept. It includes key definitions and simple explanations suitable for beginners.",
-                elementary: "This elementary level answer builds on basic concepts with more detailed explanations. It includes examples and breaks down the concept into understandable parts for better comprehension.",
-                intermediate: "This intermediate level answer provides comprehensive coverage of the topic with scientific explanations, formulas, and practical applications. It requires good understanding of fundamental concepts.",
-                advanced: "This advanced level answer includes in-depth scientific reasoning, mathematical derivations, and real-world applications. It demonstrates mastery of the subject matter with detailed analysis.",
-                expert: "This expert level answer provides exhaustive analysis with quantum mechanical considerations, advanced mathematical formulations, and connections to cutting-edge research. It represents the highest level of understanding."
+                basic: "This is a basic level answer providing fundamental understanding. It includes key definitions and simple explanations suitable for beginners.",
+                elementary: "This elementary answer builds on basic concepts with detailed explanations, examples, and breaks down the concept into understandable parts.",
+                intermediate: "This intermediate answer provides comprehensive coverage with scientific explanations, formulas, and practical applications requiring good understanding of fundamentals.",
+                advanced: "This advanced answer includes in-depth scientific reasoning, mathematical derivations, and real-world applications demonstrating mastery of the subject.",
+                expert: "This expert answer provides exhaustive analysis with quantum mechanical considerations, advanced mathematical formulations, and connections to cutting-edge research."
             };
 
             if (answers[question] && answers[question][level]) {
                 return answers[question][level];
+            }
+            return defaultAnswers[level];
+        }
+
+        function switchInputMode(mode) {
+            currentState.inputMode = mode;
+            
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            if (mode === 'voice') {
+                document.getElementById('voice-mode').style.display = 'block';
+                document.getElementById('keyboard-mode').classList.remove('active');
+                
+                // Sync text input to transcription if switching modes
+                if (currentState.userTranscript) {
+                    document.getElementById('transcription').textContent = currentState.userTranscript;
+                }
             } else {
-                return defaultAnswers[level];
+                document.getElementById('voice-mode').style.display = 'none';
+                document.getElementById('keyboard-mode').classList.add('active');
+                
+                // Stop any recording
+                if (currentState.isRecording) {
+                    toggleRecording();
+                }
+                
+                // Sync transcription to text input
+                document.getElementById('textInput').value = currentState.userTranscript || '';
             }
         }
 
@@ -939,19 +1259,23 @@
             document.getElementById('answer-display').style.display = 'none';
             document.getElementById('recite-section').classList.add('active');
             
-            // Reset everything
+            // Reset
             currentState.userTranscript = '';
             currentState.timeRemaining = 180;
             currentState.isRecording = false;
+            currentState.isPaused = false;
             document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
+            document.getElementById('textInput').value = '';
             document.getElementById('recording-status').textContent = 'Ready to record. Click the microphone!';
-            document.getElementById('micBtn').classList.remove('recording');
+            document.getElementById('micBtn').classList.remove('recording', 'paused');
+            document.getElementById('recordingControls').style.display = 'none';
             updateTimer();
         }
 
         function toggleRecording() {
             const micBtn = document.getElementById('micBtn');
             const status = document.getElementById('recording-status');
+            const controls = document.getElementById('recordingControls');
             
             if (!currentState.recognition) {
                 alert('🎤 Speech recognition is not supported in your browser.\n\nPlease use Chrome, Edge, or Safari for voice recording feature.');
@@ -963,8 +1287,11 @@
                 try {
                     currentState.recognition.start();
                     currentState.isRecording = true;
+                    currentState.isPaused = false;
                     micBtn.classList.add('recording');
+                    micBtn.classList.remove('paused');
                     status.textContent = '🔴 Recording... Speak now!';
+                    controls.style.display = 'flex';
                     
                     // Start timer
                     currentState.timerInterval = setInterval(() => {
@@ -972,8 +1299,8 @@
                         updateTimer();
                         
                         if (currentState.timeRemaining <= 0) {
-                            toggleRecording(); // Auto-stop
-                            alert('Time is up! Your answer has been recorded.');
+                            toggleRecording();
+                            alert('⏰ Time is up! Your answer has been recorded.');
                         }
                     }, 1000);
                 } catch (error) {
@@ -981,20 +1308,69 @@
                     status.textContent = 'Error starting recording. Please try again.';
                 }
             } else {
-                // Stop recording
+                // Stop recording completely
                 try {
                     currentState.recognition.stop();
                 } catch (error) {
                     console.error('Error stopping recognition:', error);
                 }
                 currentState.isRecording = false;
-                micBtn.classList.remove('recording');
-                status.textContent = 'Recording stopped. Click Submit to evaluate your answer.';
+                currentState.isPaused = false;
+                micBtn.classList.remove('recording', 'paused');
+                status.textContent = '✓ Recording stopped. Your answer is saved. Click Submit to evaluate.';
+                controls.style.display = 'none';
                 
                 if (currentState.timerInterval) {
                     clearInterval(currentState.timerInterval);
                 }
             }
+        }
+
+        function pauseRecording() {
+            if (!currentState.isRecording) return;
+            
+            try {
+                currentState.recognition.stop();
+            } catch(e) {}
+            
+            currentState.isPaused = true;
+            document.getElementById('micBtn').classList.remove('recording');
+            document.getElementById('micBtn').classList.add('paused');
+            document.getElementById('recording-status').textContent = '⏸️ Paused. Click Resume to continue.';
+            
+            document.querySelector('.control-btn.pause').style.display = 'none';
+            document.querySelector('.control-btn.resume').style.display = 'block';
+            
+            if (currentState.timerInterval) {
+                clearInterval(currentState.timerInterval);
+            }
+        }
+
+        function resumeRecording() {
+            if (!currentState.isRecording) return;
+            
+            try {
+                currentState.recognition.start();
+            } catch(e) {}
+            
+            currentState.isPaused = false;
+            document.getElementById('micBtn').classList.add('recording');
+            document.getElementById('micBtn').classList.remove('paused');
+            document.getElementById('recording-status').textContent = '🔴 Recording... Speak now!';
+            
+            document.querySelector('.control-btn.pause').style.display = 'block';
+            document.querySelector('.control-btn.resume').style.display = 'none';
+            
+            // Restart timer
+            currentState.timerInterval = setInterval(() => {
+                currentState.timeRemaining--;
+                updateTimer();
+                
+                if (currentState.timeRemaining <= 0) {
+                    toggleRecording();
+                    alert('⏰ Time is up!');
+                }
+            }, 1000);
         }
 
         function updateTimer() {
@@ -1026,13 +1402,19 @@
             
             currentState.userTranscript = '';
             document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
+            document.getElementById('textInput').value = '';
             document.getElementById('recording-status').textContent = 'Ready to record';
-            document.getElementById('micBtn').classList.remove('recording');
+            document.getElementById('micBtn').classList.remove('recording', 'paused');
         }
 
         function submitForEvaluation() {
+            // Get answer from active input mode
+            if (currentState.inputMode === 'keyboard') {
+                currentState.userTranscript = document.getElementById('textInput').value;
+            }
+            
             if (!currentState.userTranscript || currentState.userTranscript.trim().length < 10) {
-                alert('⚠️ Please record your answer before submitting!\n\nYour answer is too short. Speak more about the topic.');
+                alert('⚠️ Please provide your answer before submitting!\n\nYour answer is too short. Please elaborate more on the topic.');
                 return;
             }
 
@@ -1043,73 +1425,123 @@
             document.getElementById('recite-section').classList.remove('active');
             document.getElementById('feedback-section').classList.add('active');
             
-            document.getElementById('feedback-text').innerHTML = '<div class="loading"><div class="spinner"></div><p>Evaluating your answer...</p></div>';
+            document.getElementById('feedback-text').innerHTML = '<div class="loading"><div class="spinner"></div><p>Evaluating your answer with advanced rubrics...</p></div>';
 
             // Evaluate answer
             setTimeout(() => {
-                const evaluation = evaluateAnswer(currentState.question.text, currentState.userTranscript);
-                displayFeedback(evaluation);
+                const evaluation = evaluateAnswerWithRubrics(currentState.question.text, currentState.userTranscript);
+                displayDetailedFeedback(evaluation);
             }, 1500);
         }
 
-        function evaluateAnswer(question, userAnswer) {
+        function evaluateAnswerWithRubrics(question, userAnswer) {
+            const rubric = evaluationRubrics[question];
+            
+            if (!rubric) {
+                // Fallback to basic evaluation
+                return {
+                    score: 50,
+                    rubricResults: [],
+                    grammarScore: 5,
+                    feedback: "Detailed rubric not available for this question. Basic evaluation applied."
+                };
+            }
+
             const lowerAnswer = userAnswer.toLowerCase();
+            let totalScore = 0;
+            let rubricResults = [];
+            
+            // Evaluate each rubric item
+            rubric.rubric.forEach(item => {
+                let itemScore = 0;
+                let foundKeywords = [];
+                let missingKeywords = [];
+                let status = 'missing';
+                
+                // Check required keywords first
+                const hasRequired = item.requiredKeywords.every(kw => 
+                    lowerAnswer.includes(kw.toLowerCase())
+                );
+                
+                if (hasRequired) {
+                    // Check all keywords
+                    item.keywords.forEach(keyword => {
+                        if (lowerAnswer.includes(keyword.toLowerCase())) {
+                            foundKeywords.push(keyword);
+                        } else {
+                            missingKeywords.push(keyword);
+                        }
+                    });
+                    
+                    // Calculate item score based on keyword coverage
+                    const coverage = foundKeywords.length / item.keywords.length;
+                    
+                    if (coverage >= 0.7) {
+                        itemScore = item.points;
+                        status = 'found';
+                    } else if (coverage >= 0.4) {
+                        itemScore = item.points * 0.6;
+                        status = 'partial';
+                    } else {
+                        itemScore = item.points * 0.3;
+                        status = 'partial';
+                    }
+                } else {
+                    // Required keywords missing
+                    item.keywords.forEach(keyword => {
+                        if (lowerAnswer.includes(keyword.toLowerCase())) {
+                            foundKeywords.push(keyword);
+                        } else {
+                            missingKeywords.push(keyword);
+                        }
+                    });
+                    
+                    // Minimal partial credit
+                    if (foundKeywords.length > 0) {
+                        itemScore = item.points * 0.2;
+                        status = 'partial';
+                    }
+                }
+                
+                totalScore += itemScore;
+                
+                rubricResults.push({
+                    ...item,
+                    earnedPoints: Math.round(itemScore * 10) / 10,
+                    status: status,
+                    foundKeywords: foundKeywords,
+                    missingKeywords: missingKeywords
+                });
+            });
+            
+            // Grammar and structure evaluation (10 points)
+            let grammarScore = 0;
+            const sentences = userAnswer.split(/[.!?]+/).filter(s => s.trim().length > 10);
             const wordCount = userAnswer.trim().split(/\s+/).length;
             
-            // Simple keyword-based scoring
-            let score = 0;
-            const maxScore = 100;
+            // Sentence structure (5 points)
+            if (sentences.length >= 3) grammarScore += 5;
+            else if (sentences.length >= 2) grammarScore += 3;
+            else if (sentences.length >= 1) grammarScore += 1;
             
-            // Word count score (20 points)
-            if (wordCount >= 30) score += 20;
-            else if (wordCount >= 20) score += 15;
-            else if (wordCount >= 10) score += 10;
-            else score += 5;
+            // Word count adequacy (5 points)
+            if (wordCount >= 30) grammarScore += 5;
+            else if (wordCount >= 20) grammarScore += 3;
+            else if (wordCount >= 10) grammarScore += 1;
             
-            // Keyword matching (60 points)
-            const keywords = {
-                "Define inertia": ['inertia', 'resist', 'change', 'motion', 'rest', 'direction', 'property', 'object'],
-                "types of force": ['contact', 'non-contact', 'friction', 'gravity', 'magnetic', 'force', 'touch'],
-                "Newton": ['law', 'force', 'acceleration', 'mass', 'momentum', 'motion', 'action', 'reaction'],
-                "mass and weight": ['mass', 'weight', 'scalar', 'vector', 'constant', 'varies', 'gravity', 'kilogram', 'newton']
-            };
-            
-            // Find relevant keywords
-            let relevantKeywords = [];
-            for (let key in keywords) {
-                if (question.toLowerCase().includes(key.toLowerCase())) {
-                    relevantKeywords = keywords[key];
-                    break;
-                }
-            }
-            
-            if (relevantKeywords.length === 0) {
-                relevantKeywords = ['concept', 'explain', 'define', 'state', 'describe'];
-            }
-            
-            let keywordScore = 0;
-            relevantKeywords.forEach(keyword => {
-                if (lowerAnswer.includes(keyword)) {
-                    keywordScore += 60 / relevantKeywords.length;
-                }
-            });
-            score += Math.min(keywordScore, 60);
-            
-            // Structure score (20 points)
-            const sentences = userAnswer.split(/[.!?]+/).filter(s => s.trim().length > 0);
-            if (sentences.length >= 3) score += 20;
-            else if (sentences.length >= 2) score += 15;
-            else if (sentences.length >= 1) score += 10;
-            else score += 5;
+            totalScore += grammarScore;
             
             return {
-                score: Math.min(Math.round(score), 100),
+                score: Math.min(Math.round(totalScore), 100),
+                rubricResults: rubricResults,
+                grammarScore: grammarScore,
                 wordCount: wordCount,
-                relevantKeywords: relevantKeywords
+                sentenceCount: sentences.length,
+                maxScore: rubric.rubric.reduce((sum, item) => sum + item.points, 0) + rubric.grammarPoints
             };
         }
 
-        function displayFeedback(evaluation) {
+        function displayDetailedFeedback(evaluation) {
             const scoreCircle = document.getElementById('score-circle');
             const feedbackText = document.getElementById('feedback-text');
             
@@ -1124,40 +1556,99 @@
                 scoreCircle.style.background = 'linear-gradient(145deg, #f44336, #d32f2f)';
             }
             
-            let feedbackHTML = '<h3 style="color: #667eea; margin-bottom: 20px;">📊 Detailed Evaluation</h3>';
+            let feedbackHTML = '';
             
-            feedbackHTML += '<div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px;">';
-            feedbackHTML += `<p style="font-size: 1.2em; margin-bottom: 15px;"><strong>Your Score: ${evaluation.score}/100</strong></p>`;
-            feedbackHTML += `<p style="color: #666;">Word Count: ${evaluation.wordCount} words</p>`;
+            // Comparison view
+            feedbackHTML += '<div class="comparison-view">';
+            feedbackHTML += '<div class="comparison-box">';
+            feedbackHTML += '<h4>📝 Your Answer</h4>';
+            feedbackHTML += `<p style="line-height: 1.8; color: #333;">${currentState.userTranscript}</p>`;
+            feedbackHTML += `<p style="margin-top: 15px; color: #666; font-size: 0.95em;">Words: ${evaluation.wordCount} | Sentences: ${evaluation.sentenceCount}</p>`;
             feedbackHTML += '</div>';
             
-            feedbackHTML += '<div style="background: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 20px;">';
-            feedbackHTML += '<h4 style="color: #1976D2; margin-bottom: 10px;">📝 Your Answer:</h4>';
-            feedbackHTML += `<p style="line-height: 1.8;">${currentState.userTranscript}</p>`;
+            feedbackHTML += '<div class="comparison-box">';
+            feedbackHTML += '<h4>📖 Expected Answer</h4>';
+            feedbackHTML += `<p style="line-height: 1.8; color: #333;">${currentState.currentAnswer}</p>`;
+            feedbackHTML += '</div>';
             feedbackHTML += '</div>';
             
-            feedbackHTML += '<div style="background: #f1f8e9; padding: 20px; border-radius: 10px; margin-bottom: 20px;">';
-            feedbackHTML += '<h4 style="color: #689F38; margin-bottom: 10px;">📖 Expected Answer:</h4>';
-            feedbackHTML += `<p style="line-height: 1.8;">${currentState.currentAnswer}</p>`;
-            feedbackHTML += '</div>';
+            // Detailed rubric breakdown
+            if (evaluation.rubricResults && evaluation.rubricResults.length > 0) {
+                feedbackHTML += '<div class="rubric-breakdown">';
+                feedbackHTML += '<h3 style="color: #667eea; margin-bottom: 20px;">🎯 Detailed Evaluation Breakdown</h3>';
+                
+                evaluation.rubricResults.forEach((result, index) => {
+                    const percentage = Math.round((result.earnedPoints / result.points) * 100);
+                    
+                    feedbackHTML += `<div class="rubric-item ${result.status}">`;
+                    feedbackHTML += '<div class="rubric-header">';
+                    feedbackHTML += `<strong>${result.concept}</strong>`;
+                    feedbackHTML += `<strong style="font-size: 1.2em;">${result.earnedPoints}/${result.points} (${percentage}%)</strong>`;
+                    feedbackHTML += '</div>';
+                    
+                    feedbackHTML += `<p style="color: #666; margin: 10px 0;">${result.description}</p>`;
+                    
+                    if (result.foundKeywords.length > 0) {
+                        feedbackHTML += '<div style="margin-top: 10px;">';
+                        feedbackHTML += '<strong style="color: #4caf50;">✓ Found Keywords:</strong><br>';
+                        result.foundKeywords.forEach(kw => {
+                            feedbackHTML += `<span class="keyword-badge found">${kw}</span>`;
+                        });
+                        feedbackHTML += '</div>';
+                    }
+                    
+                    if (result.missingKeywords.length > 0) {
+                        feedbackHTML += '<div style="margin-top: 10px;">';
+                        feedbackHTML += '<strong style="color: #f44336;">✗ Missing Keywords:</strong><br>';
+                        result.missingKeywords.forEach(kw => {
+                            feedbackHTML += `<span class="keyword-badge missing">${kw}</span>`;
+                        });
+                        feedbackHTML += '</div>';
+                    }
+                    
+                    feedbackHTML += '</div>';
+                });
+                
+                // Grammar score
+                feedbackHTML += '<div class="rubric-item ' + (evaluation.grammarScore >= 8 ? 'found' : (evaluation.grammarScore >= 5 ? 'partial' : 'missing')) + '">';
+                feedbackHTML += '<div class="rubric-header">';
+                feedbackHTML += '<strong>Grammar & Structure</strong>';
+                feedbackHTML += `<strong style="font-size: 1.2em;">${evaluation.grammarScore}/10</strong>`;
+                feedbackHTML += '</div>';
+                feedbackHTML += `<p style="color: #666; margin-top: 10px;">Sentence structure, word count, and overall presentation</p>`;
+                feedbackHTML += '</div>';
+                
+                feedbackHTML += '</div>';
+            }
             
-            feedbackHTML += '<div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 4px solid #ffc107;">';
-            feedbackHTML += '<h4 style="color: #856404; margin-bottom: 10px;">💡 Feedback:</h4>';
-            feedbackHTML += '<ul style="margin-left: 20px; line-height: 1.8;">';
+            // Recommendations
+            feedbackHTML += '<div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 25px; border-left: 4px solid #ffc107;">';
+            feedbackHTML += '<h4 style="color: #856404; margin-bottom: 15px;">💡 Recommendations for Improvement</h4>';
+            feedbackHTML += '<ul style="margin-left: 20px; line-height: 1.8; color: #856404;">';
             
             if (evaluation.score >= 80) {
-                feedbackHTML += '<li><strong>Excellent work!</strong> You demonstrated strong understanding of the concept.</li>';
-                feedbackHTML += '<li>Your answer covered most key points effectively.</li>';
+                feedbackHTML += '<li><strong>Excellent work!</strong> You demonstrated strong understanding of key concepts.</li>';
+                feedbackHTML += '<li>Keep practicing to maintain this high level of performance.</li>';
             } else if (evaluation.score >= 60) {
-                feedbackHTML += '<li><strong>Good effort!</strong> You have basic understanding but can improve.</li>';
-                feedbackHTML += '<li>Try to include more key concepts and examples in your answer.</li>';
+                feedbackHTML += '<li><strong>Good effort!</strong> You covered several important points.</li>';
+                feedbackHTML += '<li>Focus on including all required keywords and concepts mentioned in the expected answer.</li>';
             } else {
                 feedbackHTML += '<li><strong>Keep practicing!</strong> Review the expected answer carefully.</li>';
-                feedbackHTML += '<li>Focus on understanding key concepts before attempting again.</li>';
+                feedbackHTML += '<li>Pay special attention to the missing keywords highlighted above.</li>';
+            }
+            
+            // Specific recommendations based on rubric
+            const missingConcepts = evaluation.rubricResults.filter(r => r.status === 'missing' || r.earnedPoints < r.points * 0.5);
+            if (missingConcepts.length > 0) {
+                feedbackHTML += '<li><strong>Key concepts to study:</strong> ' + missingConcepts.map(c => c.concept).join(', ') + '</li>';
             }
             
             if (evaluation.wordCount < 20) {
-                feedbackHTML += '<li>Try to elaborate more on your answer. Aim for at least 20-30 words for brief answers.</li>';
+                feedbackHTML += '<li>Try to elaborate more. Aim for at least 30-40 words for brief answers.</li>';
+            }
+            
+            if (evaluation.sentenceCount < 3) {
+                feedbackHTML += '<li>Structure your answer in multiple sentences for better clarity.</li>';
             }
             
             feedbackHTML += '</ul></div>';
@@ -1169,9 +1660,8 @@
             document.getElementById('feedback-section').classList.remove('active');
             document.getElementById('answer-display').style.display = 'block';
             
-            currentState.userTranscript = '';
-            document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
-            document.getElementById('recording-status').textContent = 'Ready to record';
+            // Keep the previous answer visible for reference
+            // Don't reset userTranscript
         }
 
         function nextQuestion() {
@@ -1189,6 +1679,9 @@
                     btn.classList.add('active');
                 }
             });
+            
+            document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
+            document.getElementById('textInput').value = '';
             
             updateBreadcrumb();
         }
