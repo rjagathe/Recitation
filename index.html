@@ -408,6 +408,11 @@
             background: #fffef0;
         }
 
+        .editable-transcription.recording-active {
+            background: #fff5f5;
+            cursor: not-allowed;
+        }
+
         .voice-correction-mode {
             background: #e3f2fd;
             padding: 15px;
@@ -830,6 +835,7 @@
                                     <li>Click in the text area to place cursor anywhere and continue speaking</li>
                                     <li>Select text, then click "Correct Selection" to re-speak that part only</li>
                                     <li>Use Pause/Resume to take breaks without losing your progress</li>
+                                    <li>Keyboard is disabled during recording to prevent duplicate input</li>
                                 </ul>
                             </div>
 
@@ -873,7 +879,8 @@
                                     <ul style="margin-left: 20px; margin-top: 8px; line-height: 1.6;">
                                         <li>Your text is auto-saved - it won't disappear when pausing</li>
                                         <li>Select any word/sentence and use "Correct Selection" to fix it by voice</li>
-                                        <li>You can manually edit text by clicking and typing too!</li>
+                                        <li>Keyboard is disabled during recording to prevent duplicates</li>
+                                        <li>Pause recording to manually edit text with keyboard</li>
                                     </ul>
                                 </div>
                             </div>
@@ -1058,7 +1065,8 @@
             isCorrectingSelection: false,
             selectionStart: 0,
             selectionEnd: 0,
-            tempCorrectionText: ''
+            tempCorrectionText: '',
+            lastProcessedResultIndex: -1  // Track to prevent duplicate processing
         };
 
         // Initialize event listeners
@@ -1113,51 +1121,49 @@
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 currentState.recognition = new SpeechRecognition();
                 currentState.recognition.continuous = true;
-                currentState.recognition.interimResults = true;
+                currentState.recognition.interimResults = false;  // Changed to false to avoid duplicate interim results
                 currentState.recognition.lang = 'en-US';
                 
                 currentState.recognition.onresult = function(event) {
                     const transcriptionBox = document.getElementById('transcription');
-                    let finalTranscript = '';
                     
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                        const transcript = event.results[i][0].transcript;
+                    // Process only new results to avoid duplicates
+                    for (let i = currentState.lastProcessedResultIndex + 1; i < event.results.length; i++) {
                         if (event.results[i].isFinal) {
-                            finalTranscript += transcript + ' ';
+                            const transcript = event.results[i][0].transcript;
+                            
+                            if (currentState.isCorrectingSelection) {
+                                // Replace selected text with new speech
+                                const currentText = transcriptionBox.value;
+                                const beforeSelection = currentText.substring(0, currentState.selectionStart);
+                                const afterSelection = currentText.substring(currentState.selectionEnd);
+                                transcriptionBox.value = beforeSelection + transcript.trim() + ' ' + afterSelection;
+                                
+                                // Update cursor position
+                                const newPosition = beforeSelection.length + transcript.trim().length + 1;
+                                transcriptionBox.setSelectionRange(newPosition, newPosition);
+                                
+                                currentState.isCorrectingSelection = false;
+                                document.getElementById('voiceCorrectionMode').classList.remove('active');
+                            } else {
+                                // Insert at cursor position
+                                const cursorPos = transcriptionBox.selectionStart;
+                                const currentText = transcriptionBox.value;
+                                const beforeCursor = currentText.substring(0, cursorPos);
+                                const afterCursor = currentText.substring(cursorPos);
+                                
+                                transcriptionBox.value = beforeCursor + transcript + ' ' + afterCursor;
+                                
+                                // Update cursor position
+                                const newPosition = cursorPos + transcript.length + 1;
+                                transcriptionBox.setSelectionRange(newPosition, newPosition);
+                            }
+                            
+                            // Sync to state
+                            currentState.userTranscript = transcriptionBox.value;
+                            currentState.lastProcessedResultIndex = i;
+                            updateCursorInfo();
                         }
-                    }
-                    
-                    if (finalTranscript) {
-                        if (currentState.isCorrectingSelection) {
-                            // Replace selected text with new speech
-                            const currentText = transcriptionBox.value;
-                            const beforeSelection = currentText.substring(0, currentState.selectionStart);
-                            const afterSelection = currentText.substring(currentState.selectionEnd);
-                            transcriptionBox.value = beforeSelection + finalTranscript.trim() + afterSelection;
-                            
-                            // Update cursor position
-                            const newPosition = beforeSelection.length + finalTranscript.trim().length;
-                            transcriptionBox.setSelectionRange(newPosition, newPosition);
-                            
-                            currentState.isCorrectingSelection = false;
-                            document.getElementById('voiceCorrectionMode').classList.remove('active');
-                        } else {
-                            // Insert at cursor position
-                            const cursorPos = transcriptionBox.selectionStart;
-                            const currentText = transcriptionBox.value;
-                            const beforeCursor = currentText.substring(0, cursorPos);
-                            const afterCursor = currentText.substring(cursorPos);
-                            
-                            transcriptionBox.value = beforeCursor + finalTranscript + afterCursor;
-                            
-                            // Update cursor position
-                            const newPosition = cursorPos + finalTranscript.length;
-                            transcriptionBox.setSelectionRange(newPosition, newPosition);
-                        }
-                        
-                        // Sync to state
-                        currentState.userTranscript = transcriptionBox.value;
-                        updateCursorInfo();
                     }
                 };
 
@@ -1179,11 +1185,13 @@
                 };
             }
 
-            // Text input sync with auto-save
+            // Text input sync with auto-save (only when not recording)
             const transcriptionBox = document.getElementById('transcription');
             transcriptionBox.addEventListener('input', function() {
-                currentState.userTranscript = this.value;
-                updateCursorInfo();
+                if (!currentState.isRecording || currentState.isPaused) {
+                    currentState.userTranscript = this.value;
+                    updateCursorInfo();
+                }
             });
 
             document.getElementById('textInput').addEventListener('input', function() {
@@ -1419,6 +1427,7 @@
             currentState.isRecording = false;
             currentState.isPaused = false;
             currentState.isCorrectingSelection = false;
+            currentState.lastProcessedResultIndex = -1;  // Reset for new session
             
             // Show existing content if any
             document.getElementById('transcription').value = currentState.userTranscript || '';
@@ -1435,6 +1444,7 @@
             const micBtn = document.getElementById('micBtn');
             const status = document.getElementById('recording-status');
             const controls = document.getElementById('recordingControls');
+            const transcriptionBox = document.getElementById('transcription');
             
             if (!currentState.recognition) {
                 alert('🎤 Speech recognition is not supported in your browser.\n\nPlease use Chrome, Edge, or Safari for voice recording feature.');
@@ -1445,7 +1455,12 @@
                 // Start recording
                 try {
                     // Sync current text to state before starting
-                    currentState.userTranscript = document.getElementById('transcription').value;
+                    currentState.userTranscript = transcriptionBox.value;
+                    currentState.lastProcessedResultIndex = -1;  // Reset tracking
+                    
+                    // Make textarea readonly to prevent keyboard popup on mobile
+                    transcriptionBox.readOnly = false;  // Allow cursor positioning but discourage keyboard
+                    transcriptionBox.classList.add('recording-active');
                     
                     currentState.recognition.start();
                     currentState.isRecording = true;
@@ -1468,6 +1483,8 @@
                 } catch (error) {
                     console.error('Failed to start recording:', error);
                     status.textContent = 'Error starting recording. Your text is saved. Try again.';
+                    transcriptionBox.readOnly = false;
+                    transcriptionBox.classList.remove('recording-active');
                 }
             } else {
                 // Stop recording completely
@@ -1481,6 +1498,10 @@
                 micBtn.classList.remove('recording', 'paused');
                 status.textContent = '✓ Recording stopped. Your answer is saved. Click Submit to evaluate.';
                 controls.style.display = 'none';
+                
+                // Re-enable keyboard editing
+                transcriptionBox.readOnly = false;
+                transcriptionBox.classList.remove('recording-active');
                 
                 if (currentState.timerInterval) {
                     clearInterval(currentState.timerInterval);
@@ -1496,9 +1517,13 @@
             } catch(e) {}
             
             currentState.isPaused = true;
+            const transcriptionBox = document.getElementById('transcription');
+            transcriptionBox.readOnly = false;  // Allow editing when paused
+            transcriptionBox.classList.remove('recording-active');
+            
             document.getElementById('micBtn').classList.remove('recording');
             document.getElementById('micBtn').classList.add('paused');
-            document.getElementById('recording-status').textContent = '⏸️ Paused. Your text is saved. Click Resume to continue.';
+            document.getElementById('recording-status').textContent = '⏸️ Paused. Your text is saved. You can edit now. Click Resume to continue.';
             
             document.querySelector('.control-btn.pause').style.display = 'none';
             document.querySelector('.control-btn.resume').style.display = 'block';
@@ -1508,15 +1533,27 @@
             }
             
             // Ensure text is saved
-            currentState.userTranscript = document.getElementById('transcription').value;
+            currentState.userTranscript = transcriptionBox.value;
         }
 
         function resumeRecording() {
             if (!currentState.isRecording) return;
             
+            const transcriptionBox = document.getElementById('transcription');
+            
             try {
+                // Sync text before resuming
+                currentState.userTranscript = transcriptionBox.value;
+                currentState.lastProcessedResultIndex = -1;  // Reset to avoid skipping
+                
+                // Disable keyboard again
+                transcriptionBox.readOnly = false;
+                transcriptionBox.classList.add('recording-active');
+                
                 currentState.recognition.start();
-            } catch(e) {}
+            } catch(e) {
+                console.error('Error resuming:', e);
+            }
             
             currentState.isPaused = false;
             document.getElementById('micBtn').classList.add('recording');
@@ -1555,7 +1592,7 @@
             currentState.selectionEnd = transcriptionBox.selectionEnd;
             
             document.getElementById('voiceCorrectionMode').classList.add('active');
-            document.getElementById('recording-status').textContent = `🎯 Correction Mode: Will replace "${selectedText}" - Click mic to speak the correction`;
+            document.getElementById('recording-status').textContent = `🎯 Correction Mode: Will replace "${selectedText.substring(0, 30)}..." - Click mic to speak the correction`;
             
             // Highlight selection
             transcriptionBox.focus();
@@ -1608,6 +1645,7 @@
             document.getElementById('recording-status').textContent = 'Ready to record';
             document.getElementById('micBtn').classList.remove('recording', 'paused');
             document.getElementById('voiceCorrectionMode').classList.remove('active');
+            document.getElementById('transcription').classList.remove('recording-active');
         }
 
         function submitForEvaluation() {
@@ -1860,6 +1898,7 @@
             currentState.question = null;
             currentState.userTranscript = '';
             currentState.level = 'basic';
+            currentState.lastProcessedResultIndex = -1;
             
             document.querySelectorAll('.level-btn').forEach(btn => {
                 btn.classList.remove('active');
