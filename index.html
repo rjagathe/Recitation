@@ -206,363 +206,9 @@
             transform: translateY(-2px);
         }
 
-        .learning-interface {
-            display: none;
-        }
-
-        .learning-interface.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .question-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-        }
-
-        .question-header h2 {
-            font-size: 1.8em;
-            margin-bottom: 10px;
-        }
-
-        .level-selector {
-            display: flex;
-            gap: 10px;
-            margin: 25px 0;
-            flex-wrap: wrap;
-        }
-
-        .level-btn {
-            flex: 1;
-            min-width: 100px;
-            padding: 15px;
-            border: 3px solid #667eea;
-            background: white;
-            color: #667eea;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .level-btn:hover {
-            background: #f0f0f0;
-            transform: translateY(-2px);
-        }
-
-        .level-btn.active {
-            background: #667eea;
-            color: white;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .answer-display {
-            background: #f9f9f9;
-            padding: 30px;
-            border-radius: 12px;
-            margin: 20px 0;
-            border-left: 5px solid #667eea;
-            line-height: 1.8;
-            font-size: 1.1em;
-        }
-
-        .answer-display h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        .key-terms {
-            background: #fff3cd;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border-left: 4px solid #ffc107;
-        }
-
-        .recite-section {
-            display: none;
-            margin-top: 30px;
-        }
-
-        .recite-section.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .input-mode-selector {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            justify-content: center;
-        }
-
-        .mode-btn {
-            padding: 15px 30px;
-            border: 3px solid #667eea;
-            background: white;
-            color: #667eea;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.1em;
-        }
-
-        .mode-btn.active {
-            background: #667eea;
-            color: white;
-        }
-
-        .timer-display {
-            text-align: center;
-            font-size: 3em;
-            color: #667eea;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-
-        .timer-display.warning {
-            color: #ff9800;
-        }
-
-        .timer-display.danger {
-            color: #f44336;
-            animation: pulse 1s infinite;
-        }
-
-        .voice-input-area {
-            background: #f0f4ff;
-            padding: 30px;
-            border-radius: 12px;
-            border: 3px dashed #667eea;
-            text-align: center;
-        }
-
-        .keyboard-input-area {
-            background: #f0f4ff;
-            padding: 30px;
-            border-radius: 12px;
-            border: 3px solid #667eea;
-        }
-
-        .mic-button {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #667eea, #764ba2);
-            border: none;
-            color: white;
-            font-size: 3em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            margin: 20px auto;
-            display: block;
-        }
-
-        .mic-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
-        }
-
-        .mic-button.recording {
-            background: #f44336;
-            animation: pulse 1.5s infinite;
-        }
-
-        .mic-button.paused {
-            background: #ff9800;
-        }
-
-        .mic-controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .control-btn {
-            padding: 10px 20px;
-            border: 2px solid #667eea;
-            background: white;
-            color: #667eea;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .control-btn:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .answer-textarea {
-            width: 100%;
-            min-height: 200px;
-            padding: 20px;
-            border: 2px solid #667eea;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-family: inherit;
-            line-height: 1.6;
-            resize: vertical;
-        }
-
-        .answer-textarea:focus {
-            outline: none;
-            border-color: #764ba2;
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
-        }
-
-        .transcription-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            min-height: 150px;
-            border: 2px solid #667eea;
-            text-align: left;
-            font-size: 1.1em;
-            line-height: 1.6;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .primary-btn {
-            padding: 15px 40px;
-            background: linear-gradient(145deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .primary-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .secondary-btn {
-            padding: 15px 40px;
-            background: white;
-            color: #667eea;
-            border: 3px solid #667eea;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .secondary-btn:hover {
-            background: #f0f0f0;
-        }
-
-        .feedback-section {
-            display: none;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            margin-top: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .feedback-section.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .score-display {
-            text-align: center;
-            margin: 25px 0;
-        }
-
-        .score-circle {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #4caf50, #45a049);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3em;
-            font-weight: bold;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
-        }
-
-        .comparison-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 25px 0;
-        }
-
-        .comparison-box {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid #667eea;
-        }
-
-        .comparison-box h4 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        .comparison-box p {
-            line-height: 1.8;
-            color: #333;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #667eea;
-            font-size: 1.2em;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
         @media (max-width: 768px) {
             h1 {
                 font-size: 2em;
-            }
-            
-            .comparison-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .level-selector {
-                flex-direction: column;
-            }
-            
-            .input-mode-selector {
-                flex-direction: column;
             }
         }
 
@@ -592,33 +238,23 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🎓 Acharya108</h1>
-            <p class="tagline">Affordable Education for All from All Strata of Life , History and Geography</p>
+            <p class="tagline">Affordable Education for All from All Strata of Life, History and Geography</p>
         </header>
 
         <div class="content-card">
             <div id="breadcrumb" class="breadcrumb">Home</div>
             
-            <button id="backBtn" class="back-button" style="display: none;" onclick="goBack()">← Back</button>
+            <button id="backBtn" class="back-button" style="display: none;">← Back</button>
 
             <div class="tabs">
-                <button class="tab" onclick="switchTab('cbse')">CBSE</button>
-                <button class="tab active" onclick="switchTab('tn')">TN State Board</button>
+                <button class="tab" data-tab="cbse">CBSE</button>
+                <button class="tab active" data-tab="tn">TN State Board</button>
             </div>
 
             <div id="cbse-content" class="tab-content">
@@ -629,38 +265,38 @@
 
             <div id="tn-content" class="tab-content active">
                 <div class="sub-tabs">
-                    <button class="sub-tab active" onclick="switchMedium('english')">English Medium</button>
-                    <button class="sub-tab" onclick="switchMedium('tamil')">Tamil Medium</button>
+                    <button class="sub-tab active" data-medium="english">English Medium</button>
+                    <button class="sub-tab" data-medium="tamil">Tamil Medium</button>
                 </div>
 
                 <div id="english-medium" class="tab-content active">
                     <div id="grade-selection">
                         <h3 style="margin-bottom: 20px; color: #333;">Select Grade:</h3>
                         <div class="button-grid">
-                            <button class="float-button" onclick="selectGrade(6)">Grade 6</button>
-                            <button class="float-button" onclick="selectGrade(7)">Grade 7</button>
-                            <button class="float-button" onclick="selectGrade(8)">Grade 8</button>
-                            <button class="float-button" onclick="selectGrade(9)">Grade 9</button>
-                            <button class="float-button" onclick="selectGrade(10)">Grade 10</button>
-                            <button class="float-button" onclick="selectGrade(11)">Grade 11</button>
-                            <button class="float-button" onclick="selectGrade(12)">Grade 12</button>
+                            <button class="float-button" data-grade="6">Grade 6</button>
+                            <button class="float-button" data-grade="7">Grade 7</button>
+                            <button class="float-button" data-grade="8">Grade 8</button>
+                            <button class="float-button" data-grade="9">Grade 9</button>
+                            <button class="float-button" data-grade="10">Grade 10</button>
+                            <button class="float-button" data-grade="11">Grade 11</button>
+                            <button class="float-button" data-grade="12">Grade 12</button>
                         </div>
                     </div>
 
                     <div id="subject-selection" style="display: none;">
                         <h3 style="margin-bottom: 20px; color: #333;">Select Subject:</h3>
                         <div class="button-grid">
-                            <button class="float-button" onclick="selectSubject('tamil')">Tamil</button>
-                            <button class="float-button" onclick="selectSubject('english')">English</button>
-                            <button class="float-button" onclick="selectSubject('science')">Science</button>
-                            <button class="float-button" onclick="selectSubject('social')">Social Studies</button>
+                            <button class="float-button" data-subject="tamil">Tamil</button>
+                            <button class="float-button" data-subject="english">English</button>
+                            <button class="float-button" data-subject="science">Science</button>
+                            <button class="float-button" data-subject="social">Social Studies</button>
                         </div>
                     </div>
 
                     <div id="lesson-selection" style="display: none;">
                         <h3 style="margin-bottom: 20px; color: #333;">Select Lesson:</h3>
                         <div class="button-grid">
-                            <button class="float-button" onclick="selectLesson(1)">Lesson 1: Laws of Motion</button>
+                            <button class="float-button" data-lesson="1">Lesson 1: Laws of Motion</button>
                             <button class="float-button disabled">Lesson 2: Coming Soon</button>
                             <button class="float-button disabled">Lesson 3: Coming Soon</button>
                             <button class="float-button disabled">Lesson 4: Coming Soon</button>
@@ -674,103 +310,6 @@
                         <h3 class="section-title">📚 Detailed Answer Questions</h3>
                         <ul class="question-list" id="detailed-questions"></ul>
                     </div>
-
-                    <div id="learning-interface" class="learning-interface">
-                        <div class="question-header">
-                            <h2 id="current-question"></h2>
-                            <p style="margin-top: 10px; opacity: 0.9;">Select a difficulty level and study the answer</p>
-                        </div>
-
-                        <div class="level-selector">
-                            <button class="level-btn active" onclick="selectLevel('basic')">Basic</button>
-                            <button class="level-btn" onclick="selectLevel('elementary')">Elementary</button>
-                            <button class="level-btn" onclick="selectLevel('intermediate')">Intermediate</button>
-                            <button class="level-btn" onclick="selectLevel('advanced')">Advanced</button>
-                            <button class="level-btn" onclick="selectLevel('expert')">Expert</button>
-                        </div>
-
-                        <div id="answer-display" class="answer-display">
-                            <div class="loading">
-                                <div class="spinner"></div>
-                                <p>Loading answer...</p>
-                            </div>
-                        </div>
-
-                        <div class="action-buttons">
-                            <button class="primary-btn" onclick="startRecite()">🎤 Start Reciting</button>
-                        </div>
-
-                        <div id="recite-section" class="recite-section">
-                            <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
-                                <strong>📢 Instructions:</strong> Choose voice or keyboard input. Recite/type the answer you memorized. Try to include all key points!
-                            </div>
-
-                            <div class="input-mode-selector">
-                                <button class="mode-btn active" onclick="switchInputMode('voice')">🎤 Voice Input</button>
-                                <button class="mode-btn" onclick="switchInputMode('keyboard')">⌨️ Keyboard Input</button>
-                            </div>
-
-                            <div id="voice-mode" class="voice-input-area">
-                                <div class="timer-display" id="timer">3:00</div>
-                                <h3 style="margin-bottom: 15px;">Click microphone to record</h3>
-                                <button class="mic-button" id="micBtn" onclick="toggleRecording()">🎤</button>
-                                <p id="recording-status" style="color: #667eea; font-weight: bold; margin-bottom: 15px;">Ready to record</p>
-                                
-                                <div class="mic-controls" id="mic-controls" style="display: none;">
-                                    <button class="control-btn" onclick="pauseRecording()">⏸️ Pause</button>
-                                    <button class="control-btn" onclick="resumeRecording()">▶️ Resume</button>
-                                </div>
-                                
-                                <div class="transcription-box" id="transcription">
-                                    Your answer will appear here as you speak...
-                                </div>
-                            </div>
-
-                            <div id="keyboard-mode" class="keyboard-input-area" style="display: none;">
-                                <h3 style="margin-bottom: 15px; color: #667eea;">Type your answer below:</h3>
-                                <textarea 
-                                    class="answer-textarea" 
-                                    id="keyboard-answer" 
-                                    placeholder="Start typing your answer here..."></textarea>
-                                <p style="margin-top: 10px; color: #666;">
-                                    <strong>Tip:</strong> Take your time and include all key concepts you memorized.
-                                </p>
-                            </div>
-
-                            <div class="action-buttons">
-                                <button class="secondary-btn" onclick="stopRecite()">Cancel</button>
-                                <button class="primary-btn" onclick="submitForEvaluation()">✓ Submit for Evaluation</button>
-                            </div>
-                        </div>
-
-                        <div id="feedback-section" class="feedback-section">
-                            <h2 style="color: #667eea; margin-bottom: 20px;">📊 Your Performance</h2>
-                            
-                            <div class="score-display">
-                                <div class="score-circle" id="score-circle">85%</div>
-                            </div>
-
-                            <div class="comparison-container">
-                                <div class="comparison-box">
-                                    <h4>📖 Expected Answer</h4>
-                                    <p id="expected-answer-display"></p>
-                                </div>
-                                <div class="comparison-box">
-                                    <h4>✍️ Your Answer</h4>
-                                    <p id="student-answer-display"></p>
-                                </div>
-                            </div>
-
-                            <div id="feedback-text" style="margin-top: 25px;">
-                                Loading evaluation...
-                            </div>
-
-                            <div class="action-buttons">
-                                <button class="secondary-btn" onclick="tryAgain()">🔄 Try Again</button>
-                                <button class="primary-btn" onclick="nextQuestion()">Next Question →</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div id="tamil-medium" class="tab-content">
@@ -783,6 +322,17 @@
     </div>
 
     <script>
+        // Navigation state
+        let navigationStack = [];
+        let currentState = {
+            board: 'tn',
+            medium: 'english',
+            grade: null,
+            subject: null,
+            lesson: null,
+            question: null
+        };
+
         const questions = {
             brief: [
                 "Define inertia. Give its classification.",
@@ -807,39 +357,227 @@
             ]
         };
 
-        const questionRubrics = {
-            "Define inertia. Give its classification.": {
-                keywords: [
-                    { text: ["resist", "resistance"], points: 20, label: "Resistance concept", weight: "high" },
-                    { text: ["change", "changes"], points: 15, label: "Change in state", weight: "high" },
-                    { text: ["property", "characteristic"], points: 10, label: "Property definition", weight: "medium" },
-                    { text: ["object", "body", "matter"], points: 5, label: "Subject", weight: "low" },
-                    { text: ["motion", "state of motion", "rest or motion"], points: 10, label: "State of motion", weight: "high" },
-                    { text: ["three", "3", "classified", "types"], points: 10, label: "Classification mentioned", weight: "medium" },
-                    { text: ["rest"], points: 10, label: "Inertia of rest", weight: "high" },
-                    { text: ["motion"], points: 5, label: "Inertia of motion (when 'motion' mentioned separately)", weight: "medium" },
-                    { text: ["direction"], points: 10, label: "Inertia of direction", weight: "high" }
-                ],
-                grammar: 5,
-                minWords: 20,
-                requiredConcepts: ["resistance/resist", "change", "motion/rest", "classification", "three types"]
-            },
-            "Classify the types of force based on their application.": {
-                keywords: [
-                    { text: ["contact", "contact force"], points: 25, label: "Contact force", weight: "high" },
-                    { text: ["non-contact", "non contact", "noncontact"], points: 25, label: "Non-contact force", weight: "high" },
-                    { text: ["touch", "touching", "physical contact"], points: 10, label: "Touch/contact explanation", weight: "medium" },
-                    { text: ["friction", "tension", "normal"], points: 10, label: "Contact force examples", weight: "medium" },
-                    { text: ["gravity", "magnetic", "electrostatic", "gravitational"], points: 10, label: "Non-contact examples", weight: "medium" },
-                    { text: ["two", "2", "types", "categories"], points: 10, label: "Two types mentioned", weight: "low" }
-                ],
-                grammar: 10,
-                minWords: 15,
-                requiredConcepts: ["contact force", "non-contact force"]
-            },
-            "Differentiate mass and weight.": {
-                keywords: [
-                    { text: ["mass", "matter", "quantity of matter"], points: 10, label: "Mass concept", weight: "high" },
-                    { text: ["weight", "force", "gravitational force"], points: 10, label: "Weight concept", weight: "high" },
-                    { text: ["scalar"], points: 10, label: "Mass is scalar", weight: "medium" },
-                    { text: ["vector"], points: 10, label: "Weight is vector", weight: "
+        // Initialize event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
+                });
+            });
+
+            // Sub-tab switching
+            document.querySelectorAll('.sub-tab').forEach(subTab => {
+                subTab.addEventListener('click', function() {
+                    switchMedium(this.dataset.medium);
+                });
+            });
+
+            // Grade selection
+            document.querySelectorAll('[data-grade]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    selectGrade(parseInt(this.dataset.grade));
+                });
+            });
+
+            // Subject selection
+            document.querySelectorAll('[data-subject]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    selectSubject(this.dataset.subject);
+                });
+            });
+
+            // Lesson selection
+            document.querySelectorAll('[data-lesson]:not(.disabled)').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    selectLesson(parseInt(this.dataset.lesson));
+                });
+            });
+
+            // Back button
+            document.getElementById('backBtn').addEventListener('click', goBack);
+        });
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.tab === tabName) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + '-content').classList.add('active');
+
+            currentState.board = tabName;
+            updateBreadcrumb();
+            resetNavigation();
+        }
+
+        function switchMedium(medium) {
+            // Update sub-tab buttons
+            document.querySelectorAll('.sub-tab').forEach(subTab => {
+                subTab.classList.remove('active');
+                if (subTab.dataset.medium === medium) {
+                    subTab.classList.add('active');
+                }
+            });
+
+            // Update content
+            document.getElementById('english-medium').classList.remove('active');
+            document.getElementById('tamil-medium').classList.remove('active');
+            document.getElementById(medium + '-medium').classList.add('active');
+
+            currentState.medium = medium;
+            updateBreadcrumb();
+            resetNavigation();
+        }
+
+        function selectGrade(grade) {
+            navigationStack.push('grade-selection');
+            currentState.grade = grade;
+            
+            document.getElementById('grade-selection').style.display = 'none';
+            document.getElementById('subject-selection').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'block';
+            
+            updateBreadcrumb();
+        }
+
+        function selectSubject(subject) {
+            navigationStack.push('subject-selection');
+            currentState.subject = subject;
+            
+            document.getElementById('subject-selection').style.display = 'none';
+            document.getElementById('lesson-selection').style.display = 'block';
+            
+            updateBreadcrumb();
+        }
+
+        function selectLesson(lessonNum) {
+            navigationStack.push('lesson-selection');
+            currentState.lesson = lessonNum;
+            
+            document.getElementById('lesson-selection').style.display = 'none';
+            document.getElementById('question-selection').style.display = 'block';
+            
+            loadQuestions();
+            updateBreadcrumb();
+        }
+
+        function loadQuestions() {
+            const briefList = document.getElementById('brief-questions');
+            const detailedList = document.getElementById('detailed-questions');
+            
+            briefList.innerHTML = '';
+            detailedList.innerHTML = '';
+            
+            questions.brief.forEach((q, index) => {
+                const li = document.createElement('li');
+                li.className = 'question-item';
+                li.textContent = q;
+                li.onclick = () => selectQuestion(q, 'brief');
+                briefList.appendChild(li);
+            });
+            
+            questions.detailed.forEach((q, index) => {
+                const li = document.createElement('li');
+                li.className = 'question-item';
+                li.textContent = q;
+                li.onclick = () => selectQuestion(q, 'detailed');
+                detailedList.appendChild(li);
+            });
+        }
+
+        function selectQuestion(question, type) {
+            currentState.question = { text: question, type: type };
+            alert('Question selected: ' + question + '\n\nLearning interface coming soon!');
+        }
+
+        function goBack() {
+            if (navigationStack.length === 0) return;
+            
+            const previousScreen = navigationStack.pop();
+            
+            // Hide all sections
+            document.getElementById('grade-selection').style.display = 'none';
+            document.getElementById('subject-selection').style.display = 'none';
+            document.getElementById('lesson-selection').style.display = 'none';
+            document.getElementById('question-selection').style.display = 'none';
+            
+            // Show the appropriate section
+            document.getElementById(previousScreen).style.display = 'block';
+            
+            // Update state
+            switch(previousScreen) {
+                case 'grade-selection':
+                    currentState.grade = null;
+                    currentState.subject = null;
+                    currentState.lesson = null;
+                    break;
+                case 'subject-selection':
+                    currentState.subject = null;
+                    currentState.lesson = null;
+                    break;
+                case 'lesson-selection':
+                    currentState.lesson = null;
+                    break;
+            }
+            
+            if (navigationStack.length === 0) {
+                document.getElementById('backBtn').style.display = 'none';
+            }
+            
+            updateBreadcrumb();
+        }
+
+        function resetNavigation() {
+            navigationStack = [];
+            currentState.grade = null;
+            currentState.subject = null;
+            currentState.lesson = null;
+            currentState.question = null;
+            
+            document.getElementById('grade-selection').style.display = 'block';
+            document.getElementById('subject-selection').style.display = 'none';
+            document.getElementById('lesson-selection').style.display = 'none';
+            document.getElementById('question-selection').style.display = 'none';
+            document.getElementById('backBtn').style.display = 'none';
+        }
+
+        function updateBreadcrumb() {
+            let breadcrumbText = 'Home';
+            
+            if (currentState.board === 'cbse') {
+                breadcrumbText += ' > CBSE';
+            } else if (currentState.board === 'tn') {
+                breadcrumbText += ' > TN State Board';
+            }
+            
+            if (currentState.medium === 'english') {
+                breadcrumbText += ' > English Medium';
+            } else if (currentState.medium === 'tamil') {
+                breadcrumbText += ' > Tamil Medium';
+            }
+            
+            if (currentState.grade) {
+                breadcrumbText += ' > Grade ' + currentState.grade;
+            }
+            
+            if (currentState.subject) {
+                breadcrumbText += ' > ' + currentState.subject.charAt(0).toUpperCase() + currentState.subject.slice(1);
+            }
+            
+            if (currentState.lesson) {
+                breadcrumbText += ' > Lesson ' + currentState.lesson;
+            }
+            
+            document.getElementById('breadcrumb').textContent = breadcrumbText;
+        }
+    </script>
+</body>
+</html>
