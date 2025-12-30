@@ -645,7 +645,7 @@
     </div>
 
     <script>
-        const GEMINI_API_KEY = 'AIzaSyCVvJlecyoMzQhVyIbdzs2BpAfCNdrSUTw'; // User needs to add their free Gemini API key
+        const GEMINI_API_KEY = 'YOUR_API_KEY_HERE'; // User needs to add their free Gemini API key
 
         const questions = {
             brief: [
@@ -980,13 +980,19 @@
             
             document.getElementById('recite-section').classList.remove('active');
             document.getElementById('answer-display').style.display = 'block';
+            
+            // Clear the transcription box
             currentState.userTranscript = '';
             document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
+            
+            // Reset recording status
+            document.getElementById('recording-status').textContent = 'Ready to record';
+            document.getElementById('micBtn').classList.remove('recording');
         }
 
         async function submitForEvaluation() {
-            if (!currentState.userTranscript || currentState.userTranscript.trim().length < 10) {
-                alert('Please record your answer before submitting!');
+            if (!currentState.userTranscript || currentState.userTranscript.trim().length < 5) {
+                alert('Please record your answer before submitting! Your answer is too short.');
                 return;
             }
 
@@ -998,72 +1004,220 @@
             document.getElementById('feedback-section').classList.add('active');
             
             // Show loading
-            document.getElementById('feedback-text').innerHTML = '<div class="loading"><div class="spinner"></div><p>AI is evaluating your answer...</p></div>';
+            document.getElementById('feedback-text').innerHTML = '<div class="loading"><div class="spinner"></div><p>Evaluating your answer...</p></div>';
 
-            try {
-                const evaluation = await evaluateAnswer(
+            // Use built-in evaluation (no API needed!)
+            setTimeout(() => {
+                const evaluation = evaluateAnswerBuiltIn(
                     currentState.question,
-                    currentState.currentAnswer,
-                    currentState.userTranscript,
-                    currentState.level
+                    currentState.userTranscript
                 );
                 
-                displayFeedback(evaluation);
-            } catch (error) {
-                // Demo feedback if API fails
-                const demoEvaluation = {
-                    score: 82,
-                    feedback: "Good attempt! You covered the main concepts of inertia and mentioned the three types. However, you could improve by providing more specific examples for each type. Your explanation of inertia of rest was clear, but the descriptions of inertia of motion and direction need more detail. Overall, you demonstrated a solid understanding of the topic."
-                };
-                displayFeedback(demoEvaluation);
-            }
+                displayDetailedFeedback(evaluation);
+            }, 1000);
         }
 
-        async function evaluateAnswer(question, correctAnswer, userAnswer, level) {
-            if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_API_KEY_HERE') {
-                throw new Error('API key not configured');
+        const questionRubrics = {
+            "Define inertia. Give its classification.": {
+                keywords: [
+                    { text: ["resistance to change", "resist change", "opposes change"], points: 20, label: "Basic concept of resistance" },
+                    { text: ["property", "characteristic", "nature"], points: 10, label: "Property definition" },
+                    { text: ["object", "body", "matter"], points: 5, label: "Subject identification" },
+                    { text: ["state of motion", "motion state", "velocity"], points: 10, label: "State of motion" },
+                    { text: ["classified", "classification", "types", "kinds", "three types", "3 types"], points: 10, label: "Mention of classification" },
+                    { text: ["inertia of rest", "rest inertia", "resting"], points: 10, label: "Type 1: Rest" },
+                    { text: ["inertia of motion", "motion inertia", "moving"], points: 10, label: "Type 2: Motion" },
+                    { text: ["inertia of direction", "directional inertia", "direction"], points: 10, label: "Type 3: Direction" }
+                ],
+                grammar: 15,
+                minWords: 15
+            },
+            "Classify the types of force based on their application.": {
+                keywords: [
+                    { text: ["contact force", "contact forces"], points: 20, label: "Contact force" },
+                    { text: ["non-contact force", "non contact force", "action at a distance"], points: 20, label: "Non-contact force" },
+                    { text: ["touch", "physical contact", "touching"], points: 10, label: "Contact explanation" },
+                    { text: ["friction", "tension", "normal force"], points: 10, label: "Contact force examples" },
+                    { text: ["gravity", "gravitational", "magnetic", "electrostatic"], points: 10, label: "Non-contact examples" },
+                    { text: ["classify", "classification", "types", "categories"], points: 10, label: "Classification mentioned" }
+                ],
+                grammar: 20,
+                minWords: 20
+            },
+            "If a 5 Newton and a 15 Newton forces are acting opposite to one another. Find the resultant force and the direction of action of the resultant force": {
+                keywords: [
+                    { text: ["resultant", "net force", "total force"], points: 15, label: "Resultant force concept" },
+                    { text: ["opposite", "opposing", "opposite direction"], points: 10, label: "Opposite direction mentioned" },
+                    { text: ["subtract", "difference", "minus"], points: 15, label: "Subtraction method" },
+                    { text: ["10", "ten", "10 newton"], points: 20, label: "Correct answer: 10N" },
+                    { text: ["direction", "towards", "15 newton"], points: 20, label: "Direction of larger force" },
+                    { text: ["newton", "n", "unit"], points: 5, label: "Correct unit" }
+                ],
+                grammar: 15,
+                minWords: 12
+            },
+            "Differentiate mass and weight.": {
+                keywords: [
+                    { text: ["mass", "quantity of matter", "amount of matter"], points: 15, label: "Mass definition" },
+                    { text: ["weight", "gravitational force", "pull of gravity"], points: 15, label: "Weight definition" },
+                    { text: ["scalar", "magnitude only"], points: 10, label: "Mass is scalar" },
+                    { text: ["vector", "magnitude and direction"], points: 10, label: "Weight is vector" },
+                    { text: ["constant", "same everywhere", "does not change"], points: 10, label: "Mass is constant" },
+                    { text: ["varies", "changes", "different"], points: 10, label: "Weight varies" },
+                    { text: ["kg", "kilogram", "gram"], points: 5, label: "Mass unit" },
+                    { text: ["newton", "n"], points: 5, label: "Weight unit" }
+                ],
+                grammar: 20,
+                minWords: 25
+            },
+            "State Newton's second law.": {
+                keywords: [
+                    { text: ["rate of change", "change of momentum"], points: 20, label: "Rate of change concept" },
+                    { text: ["momentum", "linear momentum"], points: 15, label: "Momentum mentioned" },
+                    { text: ["proportional", "directly proportional"], points: 15, label: "Proportionality" },
+                    { text: ["applied force", "force applied", "external force"], points: 15, label: "Applied force" },
+                    { text: ["direction", "same direction"], points: 10, label: "Direction mentioned" },
+                    { text: ["f=ma", "f = ma", "force equals mass times acceleration"], points: 10, label: "Formula mentioned" }
+                ],
+                grammar: 15,
+                minWords: 15
+            },
+            "State Newton's laws of motion?": {
+                keywords: [
+                    { text: ["first law", "law of inertia", "newton's first"], points: 15, label: "First law mentioned" },
+                    { text: ["rest", "uniform motion", "constant velocity"], points: 10, label: "First law - state of motion" },
+                    { text: ["second law", "newton's second"], points: 15, label: "Second law mentioned" },
+                    { text: ["f=ma", "force equals", "proportional"], points: 10, label: "Second law - formula/concept" },
+                    { text: ["third law", "action and reaction", "newton's third"], points: 15, label: "Third law mentioned" },
+                    { text: ["equal", "opposite", "equal and opposite"], points: 10, label: "Third law - equal & opposite" },
+                    { text: ["action", "reaction"], points: 10, label: "Action-reaction pair" }
+                ],
+                grammar: 15,
+                minWords: 30
+            }
+        };
+
+        function evaluateAnswerBuiltIn(question, userAnswer) {
+            const rubric = questionRubrics[question];
+            
+            if (!rubric) {
+                // Generic evaluation for questions without specific rubric
+                return evaluateGenericAnswer(userAnswer);
             }
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `You are an expert teacher evaluating a Grade 10 student's answer.
-
-Question: ${question}
-
-Expected Answer (${level} level): ${correctAnswer}
-
-Student's Answer: ${userAnswer}
-
-Evaluate the student's answer and provide:
-1. A score out of 100
-2. Specific feedback on what was good and what needs improvement
-3. Encouragement and suggestions for better understanding
-
-Format your response as:
-SCORE: [number]
-FEEDBACK: [detailed feedback]`
-                        }]
-                    }]
-                })
-            });
-
-            const data = await response.json();
-            const result = data.candidates[0].content.parts[0].text;
+            const lowerAnswer = userAnswer.toLowerCase();
+            const wordCount = userAnswer.trim().split(/\s+/).length;
             
-            const scoreMatch = result.match(/SCORE:\s*(\d+)/);
-            const feedbackMatch = result.match(/FEEDBACK:\s*([\s\S]+)/);
+            let totalScore = 0;
+            let maxScore = 0;
+            let breakdown = [];
+            
+            // Evaluate keywords
+            rubric.keywords.forEach(criterion => {
+                maxScore += criterion.points;
+                let found = false;
+                
+                for (let keyword of criterion.text) {
+                    if (lowerAnswer.includes(keyword.toLowerCase())) {
+                        totalScore += criterion.points;
+                        breakdown.push({
+                            label: criterion.label,
+                            points: criterion.points,
+                            maxPoints: criterion.points,
+                            found: true,
+                            keyword: keyword
+                        });
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    breakdown.push({
+                        label: criterion.label,
+                        points: 0,
+                        maxPoints: criterion.points,
+                        found: false
+                    });
+                }
+            });
+            
+            // Grammar and structure evaluation
+            maxScore += rubric.grammar;
+            const grammarScore = evaluateGrammar(userAnswer, wordCount, rubric.minWords);
+            totalScore += grammarScore;
+            breakdown.push({
+                label: "Grammar & Structure",
+                points: grammarScore,
+                maxPoints: rubric.grammar,
+                found: grammarScore > 0
+            });
+            
+            const finalScore = Math.round((totalScore / maxScore) * 100);
             
             return {
-                score: scoreMatch ? parseInt(scoreMatch[1]) : 75,
-                feedback: feedbackMatch ? feedbackMatch[1].trim() : result
+                score: finalScore,
+                breakdown: breakdown,
+                totalPoints: totalScore,
+                maxPoints: maxScore,
+                wordCount: wordCount,
+                minWords: rubric.minWords
             };
         }
 
-        function displayFeedback(evaluation) {
+        function evaluateGrammar(answer, wordCount, minWords) {
+            let score = 0;
+            const maxGrammarScore = 15;
+            
+            // Length check (5 points)
+            if (wordCount >= minWords) {
+                score += 5;
+            } else if (wordCount >= minWords * 0.7) {
+                score += 3;
+            } else if (wordCount >= minWords * 0.5) {
+                score += 1;
+            }
+            
+            // Sentence structure (5 points)
+            const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            if (sentences.length >= 2) {
+                score += 5;
+            } else if (sentences.length === 1 && wordCount > 10) {
+                score += 3;
+            }
+            
+            // Capitalization and punctuation (5 points)
+            const hasCapital = /^[A-Z]/.test(answer.trim());
+            const hasPunctuation = /[.!?]$/.test(answer.trim());
+            
+            if (hasCapital) score += 2;
+            if (hasPunctuation) score += 3;
+            
+            return Math.min(score, maxGrammarScore);
+        }
+
+        function evaluateGenericAnswer(userAnswer) {
+            const wordCount = userAnswer.trim().split(/\s+/).length;
+            let score = 50; // Base score
+            
+            if (wordCount < 5) score = 20;
+            else if (wordCount < 10) score = 40;
+            else if (wordCount < 20) score = 60;
+            else score = 75;
+            
+            return {
+                score: score,
+                breakdown: [
+                    { label: "Answer provided", points: score, maxPoints: 100, found: true }
+                ],
+                totalPoints: score,
+                maxPoints: 100,
+                wordCount: wordCount,
+                minWords: 15
+            };
+        }
+
+        function displayDetailedFeedback(evaluation) {
             const scoreCircle = document.getElementById('score-circle');
             const feedbackText = document.getElementById('feedback-text');
             
@@ -1078,16 +1232,66 @@ FEEDBACK: [detailed feedback]`
                 scoreCircle.style.background = 'linear-gradient(145deg, #f44336, #d32f2f)';
             }
             
-            feedbackText.innerHTML = `
-                <h3 style="color: #667eea; margin-bottom: 15px;">📝 Detailed Feedback</h3>
-                <p style="line-height: 1.8;">${evaluation.feedback}</p>
-            `;
+            // Build detailed breakdown
+            let breakdownHTML = '<h3 style="color: #667eea; margin-bottom: 20px;">📊 Detailed Score Breakdown</h3>';
+            
+            breakdownHTML += '<div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px;">';
+            breakdownHTML += `<p style="font-size: 1.2em; margin-bottom: 15px;"><strong>Total: ${evaluation.totalPoints}/${evaluation.maxPoints} points (${evaluation.score}%)</strong></p>`;
+            breakdownHTML += `<p style="color: #666; margin-bottom: 10px;">Word Count: ${evaluation.wordCount} words (Minimum: ${evaluation.minWords})</p>`;
+            breakdownHTML += '</div>';
+            
+            breakdownHTML += '<table style="width: 100%; border-collapse: collapse;">';
+            breakdownHTML += '<thead><tr style="background: #667eea; color: white;"><th style="padding: 12px; text-align: left; border-radius: 5px 0 0 0;">Criteria</th><th style="padding: 12px; text-align: center;">Points</th><th style="padding: 12px; text-align: center; border-radius: 0 5px 0 0;">Status</th></tr></thead>';
+            breakdownHTML += '<tbody>';
+            
+            evaluation.breakdown.forEach((item, index) => {
+                const bgColor = index % 2 === 0 ? '#f9f9f9' : 'white';
+                const statusIcon = item.found ? '✅' : '❌';
+                const statusColor = item.found ? '#4caf50' : '#f44336';
+                
+                breakdownHTML += `<tr style="background: ${bgColor};">`;
+                breakdownHTML += `<td style="padding: 12px; border-bottom: 1px solid #e0e0e0;">
+                    <strong>${item.label}</strong>
+                    ${item.keyword ? `<br><span style="color: #666; font-size: 0.9em;">Found: "${item.keyword}"</span>` : ''}
+                </td>`;
+                breakdownHTML += `<td style="padding: 12px; text-align: center; border-bottom: 1px solid #e0e0e0;"><strong>${item.points}/${item.maxPoints}</strong></td>`;
+                breakdownHTML += `<td style="padding: 12px; text-align: center; border-bottom: 1px solid #e0e0e0; color: ${statusColor}; font-size: 1.5em;">${statusIcon}</td>`;
+                breakdownHTML += '</tr>';
+            });
+            
+            breakdownHTML += '</tbody></table>';
+            
+            // Add suggestions
+            breakdownHTML += '<div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #ffc107;">';
+            breakdownHTML += '<h4 style="color: #856404; margin-bottom: 10px;">💡 Suggestions for Improvement:</h4>';
+            breakdownHTML += '<ul style="margin-left: 20px; line-height: 1.8;">';
+            
+            const missed = evaluation.breakdown.filter(item => !item.found && item.label !== "Grammar & Structure");
+            if (missed.length > 0) {
+                missed.forEach(item => {
+                    breakdownHTML += `<li>Include information about: <strong>${item.label}</strong> (${item.maxPoints} points)</li>`;
+                });
+            } else {
+                breakdownHTML += '<li>Great job! You covered all key points. Keep practicing to improve your score further.</li>';
+            }
+            
+            if (evaluation.wordCount < evaluation.minWords) {
+                breakdownHTML += `<li>Try to write at least ${evaluation.minWords} words for a complete answer.</li>`;
+            }
+            
+            breakdownHTML += '</ul></div>';
+            
+            feedbackText.innerHTML = breakdownHTML;
         }
 
         function tryAgain() {
             document.getElementById('feedback-section').classList.remove('active');
             document.getElementById('answer-display').style.display = 'block';
+            
+            // Clear previous attempt
             currentState.userTranscript = '';
+            document.getElementById('transcription').textContent = 'Your answer will appear here as you speak...';
+            document.getElementById('recording-status').textContent = 'Ready to record';
         }
 
         function nextQuestion() {
