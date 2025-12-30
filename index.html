@@ -734,7 +734,7 @@
     <div class="container">
         <header>
             <h1>🎓 Acharya108</h1>
-            <p class="tagline">Affordable Education for All - Enhanced Voice Learning System</p>
+            <p class="tagline">Affordable Education for All - AI-Powered Learning System</p>
         </header>
 
         <div class="content-card">
@@ -924,101 +924,11 @@
         </div>
     </div>
 
+    <!-- Include external scoring algorithm -->
+    <script src="scoring-algorithm.js"></script>
+    <script src="sample-data.js"></script>
+    
     <script>
-        // Enhanced evaluation rubrics
-        const evaluationRubrics = {
-            "Define inertia. Give its classification.": {
-                rubric: [
-                    {
-                        id: 1,
-                        concept: "Definition of Inertia",
-                        keywords: ["inertia", "property", "resist", "change", "motion", "state"],
-                        requiredKeywords: ["inertia", "resist"],
-                        points: 45,
-                        description: "Property of an object to resist changes in its state of motion"
-                    },
-                    {
-                        id: 2,
-                        concept: "Classification Statement",
-                        keywords: ["classified", "three", "types", "kinds", "categories"],
-                        requiredKeywords: ["three", "types"],
-                        points: 10,
-                        description: "It is classified into three types"
-                    },
-                    {
-                        id: 3,
-                        concept: "Inertia of Rest",
-                        keywords: ["rest", "stationary", "remain", "stay"],
-                        requiredKeywords: ["rest"],
-                        points: 15,
-                        description: "Objects at rest stay at rest"
-                    },
-                    {
-                        id: 4,
-                        concept: "Inertia of Motion",
-                        keywords: ["motion", "moving", "keep", "continue"],
-                        requiredKeywords: ["motion"],
-                        points: 15,
-                        description: "Moving objects keep moving"
-                    },
-                    {
-                        id: 5,
-                        concept: "Inertia of Direction",
-                        keywords: ["direction", "straight", "line", "path"],
-                        requiredKeywords: ["direction"],
-                        points: 15,
-                        description: "Objects continue in the same direction"
-                    }
-                ],
-                grammarPoints: 10
-            },
-            "Classify the types of force based on their application.": {
-                rubric: [
-                    {
-                        id: 1,
-                        concept: "Classification Statement",
-                        keywords: ["classified", "two", "types", "kinds", "based", "application"],
-                        requiredKeywords: ["two", "types"],
-                        points: 10,
-                        description: "Forces are classified into two types"
-                    },
-                    {
-                        id: 2,
-                        concept: "Contact Forces",
-                        keywords: ["contact", "touch", "physical", "direct"],
-                        requiredKeywords: ["contact"],
-                        points: 20,
-                        description: "Contact forces require physical touch"
-                    },
-                    {
-                        id: 3,
-                        concept: "Contact Force Examples",
-                        keywords: ["friction", "tension", "normal", "applied"],
-                        requiredKeywords: ["friction"],
-                        points: 20,
-                        description: "Examples: friction, tension, normal force"
-                    },
-                    {
-                        id: 4,
-                        concept: "Non-Contact Forces",
-                        keywords: ["non-contact", "distance", "without", "touch", "field"],
-                        requiredKeywords: ["non-contact"],
-                        points: 20,
-                        description: "Non-contact forces act at a distance"
-                    },
-                    {
-                        id: 5,
-                        concept: "Non-Contact Force Examples",
-                        keywords: ["gravitational", "magnetic", "electrostatic", "gravity", "magnet"],
-                        requiredKeywords: ["gravitational"],
-                        points: 30,
-                        description: "Examples: gravitational, magnetic, electrostatic"
-                    }
-                ],
-                grammarPoints: 10
-            }
-        };
-
         // Questions database
         const questions = {
             brief: [
@@ -1065,11 +975,22 @@
             selectionStart: 0,
             selectionEnd: 0,
             tempCorrectionText: '',
-            lastProcessedResultIndex: -1  // Track to prevent duplicate processing
+            lastProcessedResultIndex: -1
         };
+
+        // Initialize scorer
+        let recitationScorer = null;
 
         // Initialize event listeners
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the recitation scorer
+            if (typeof RecitationScorer !== 'undefined') {
+                recitationScorer = new RecitationScorer();
+                console.log('✅ Scoring algorithm loaded successfully');
+            } else {
+                console.warn('⚠️ Scoring algorithm not loaded. Using fallback evaluation.');
+            }
+
             // Tab switching
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', function() {
@@ -1120,32 +1041,28 @@
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 currentState.recognition = new SpeechRecognition();
                 currentState.recognition.continuous = true;
-                currentState.recognition.interimResults = false;  // Changed to false to avoid duplicate interim results
+                currentState.recognition.interimResults = false;
                 currentState.recognition.lang = 'en-US';
                 
                 currentState.recognition.onresult = function(event) {
                     const transcriptionBox = document.getElementById('transcription');
                     
-                    // Process only new results to avoid duplicates
                     for (let i = currentState.lastProcessedResultIndex + 1; i < event.results.length; i++) {
                         if (event.results[i].isFinal) {
                             const transcript = event.results[i][0].transcript;
                             
                             if (currentState.isCorrectingSelection) {
-                                // Replace selected text with new speech
                                 const currentText = transcriptionBox.value;
                                 const beforeSelection = currentText.substring(0, currentState.selectionStart);
                                 const afterSelection = currentText.substring(currentState.selectionEnd);
                                 transcriptionBox.value = beforeSelection + transcript.trim() + ' ' + afterSelection;
                                 
-                                // Update cursor position
                                 const newPosition = beforeSelection.length + transcript.trim().length + 1;
                                 transcriptionBox.setSelectionRange(newPosition, newPosition);
                                 
                                 currentState.isCorrectingSelection = false;
                                 document.getElementById('voiceCorrectionMode').classList.remove('active');
                             } else {
-                                // Insert at cursor position
                                 const cursorPos = transcriptionBox.selectionStart;
                                 const currentText = transcriptionBox.value;
                                 const beforeCursor = currentText.substring(0, cursorPos);
@@ -1153,12 +1070,10 @@
                                 
                                 transcriptionBox.value = beforeCursor + transcript + ' ' + afterCursor;
                                 
-                                // Update cursor position
                                 const newPosition = cursorPos + transcript.length + 1;
                                 transcriptionBox.setSelectionRange(newPosition, newPosition);
                             }
                             
-                            // Sync to state
                             currentState.userTranscript = transcriptionBox.value;
                             currentState.lastProcessedResultIndex = i;
                             updateCursorInfo();
@@ -1184,7 +1099,7 @@
                 };
             }
 
-            // Text input sync with auto-save (only when not recording)
+            // Text input sync
             const transcriptionBox = document.getElementById('transcription');
             transcriptionBox.addEventListener('input', function() {
                 if (!currentState.isRecording || currentState.isPaused) {
@@ -1197,7 +1112,6 @@
                 currentState.userTranscript = this.value;
             });
 
-            // Track selection for correction mode
             transcriptionBox.addEventListener('select', function() {
                 currentState.selectionStart = this.selectionStart;
                 currentState.selectionEnd = this.selectionEnd;
@@ -1400,19 +1314,16 @@
                 document.getElementById('voice-mode').style.display = 'block';
                 document.getElementById('keyboard-mode').classList.remove('active');
                 
-                // Sync from keyboard to voice
                 document.getElementById('transcription').value = currentState.userTranscript;
                 updateCursorInfo();
             } else {
                 document.getElementById('voice-mode').style.display = 'none';
                 document.getElementById('keyboard-mode').classList.add('active');
                 
-                // Stop any recording
                 if (currentState.isRecording) {
                     toggleRecording();
                 }
                 
-                // Sync from voice to keyboard
                 document.getElementById('textInput').value = currentState.userTranscript;
             }
         }
@@ -1421,14 +1332,12 @@
             document.getElementById('answer-display').style.display = 'none';
             document.getElementById('recite-section').classList.add('active');
             
-            // DON'T reset userTranscript - preserve previous content
             currentState.timeRemaining = 180;
             currentState.isRecording = false;
             currentState.isPaused = false;
             currentState.isCorrectingSelection = false;
-            currentState.lastProcessedResultIndex = -1;  // Reset for new session
+            currentState.lastProcessedResultIndex = -1;
             
-            // Show existing content if any
             document.getElementById('transcription').value = currentState.userTranscript || '';
             document.getElementById('textInput').value = currentState.userTranscript || '';
             document.getElementById('recording-status').textContent = 'Ready to record. Click the microphone!';
@@ -1451,13 +1360,10 @@
             }
             
             if (!currentState.isRecording) {
-                // Start recording
                 try {
-                    // Sync current text to state before starting
                     currentState.userTranscript = transcriptionBox.value;
-                    currentState.lastProcessedResultIndex = -1;  // Reset tracking
+                    currentState.lastProcessedResultIndex = -1;
                     
-                    // Make textarea readonly to prevent keyboard popup and duplicate input
                     transcriptionBox.readOnly = true;
                     transcriptionBox.classList.add('recording-active');
                     
@@ -1469,7 +1375,6 @@
                     status.textContent = '🔴 Recording... Speak now! Text will appear at cursor position.';
                     controls.style.display = 'flex';
                     
-                    // Start timer
                     currentState.timerInterval = setInterval(() => {
                         currentState.timeRemaining--;
                         updateTimer();
@@ -1486,7 +1391,6 @@
                     transcriptionBox.classList.remove('recording-active');
                 }
             } else {
-                // Stop recording completely
                 try {
                     currentState.recognition.stop();
                 } catch (error) {
@@ -1498,7 +1402,6 @@
                 status.textContent = '✓ Recording stopped. Your answer is saved. Click Submit to evaluate.';
                 controls.style.display = 'none';
                 
-                // Re-enable keyboard editing
                 transcriptionBox.readOnly = false;
                 transcriptionBox.classList.remove('recording-active');
                 
@@ -1517,7 +1420,7 @@
             
             currentState.isPaused = true;
             const transcriptionBox = document.getElementById('transcription');
-            transcriptionBox.readOnly = false;  // Allow editing when paused
+            transcriptionBox.readOnly = false;
             transcriptionBox.classList.remove('recording-active');
             
             document.getElementById('micBtn').classList.remove('recording');
@@ -1531,7 +1434,6 @@
                 clearInterval(currentState.timerInterval);
             }
             
-            // Ensure text is saved
             currentState.userTranscript = transcriptionBox.value;
         }
 
@@ -1541,11 +1443,9 @@
             const transcriptionBox = document.getElementById('transcription');
             
             try {
-                // Sync text before resuming
                 currentState.userTranscript = transcriptionBox.value;
-                currentState.lastProcessedResultIndex = -1;  // Reset to avoid skipping
+                currentState.lastProcessedResultIndex = -1;
                 
-                // Make readonly again to prevent duplicate input
                 transcriptionBox.readOnly = true;
                 transcriptionBox.classList.add('recording-active');
                 
@@ -1562,7 +1462,6 @@
             document.querySelector('.control-btn.pause').style.display = 'block';
             document.querySelector('.control-btn.resume').style.display = 'none';
             
-            // Restart timer
             currentState.timerInterval = setInterval(() => {
                 currentState.timeRemaining--;
                 updateTimer();
@@ -1593,7 +1492,6 @@
             document.getElementById('voiceCorrectionMode').classList.add('active');
             document.getElementById('recording-status').textContent = `🎯 Correction Mode: Will replace "${selectedText.substring(0, 30)}..." - Click mic to speak the correction`;
             
-            // Highlight selection
             transcriptionBox.focus();
         }
 
@@ -1635,7 +1533,6 @@
                 clearInterval(currentState.timerInterval);
             }
             
-            // Save current text before hiding
             currentState.userTranscript = document.getElementById('transcription').value;
             
             document.getElementById('recite-section').classList.remove('active');
@@ -1648,7 +1545,6 @@
         }
 
         function submitForEvaluation() {
-            // Get answer from active input mode
             if (currentState.inputMode === 'keyboard') {
                 currentState.userTranscript = document.getElementById('textInput').value;
             } else {
@@ -1667,110 +1563,71 @@
             document.getElementById('recite-section').classList.remove('active');
             document.getElementById('feedback-section').classList.add('active');
             
-            document.getElementById('feedback-text').innerHTML = '<div class="loading"><div class="spinner"></div><p>Evaluating your answer with advanced rubrics...</p></div>';
+            document.getElementById('feedback-text').innerHTML = '<div class="loading"><div class="spinner"></div><p>Evaluating your answer with AI-powered fuzzy matching...</p></div>';
 
-            // Evaluate answer
+            // Use advanced scoring algorithm
             setTimeout(() => {
-                const evaluation = evaluateAnswerWithRubrics(currentState.question.text, currentState.userTranscript);
+                const evaluation = evaluateWithAdvancedAlgorithm(currentState.question.text, currentState.userTranscript);
                 displayDetailedFeedback(evaluation);
             }, 1500);
         }
 
-        function evaluateAnswerWithRubrics(question, userAnswer) {
-            const rubric = evaluationRubrics[question];
-            
-            if (!rubric) {
-                return {
-                    score: 50,
-                    rubricResults: [],
-                    grammarScore: 5,
-                    feedback: "Detailed rubric not available for this question."
-                };
-            }
-
-            const lowerAnswer = userAnswer.toLowerCase();
-            let totalScore = 0;
-            let rubricResults = [];
-            
-            rubric.rubric.forEach(item => {
-                let itemScore = 0;
-                let foundKeywords = [];
-                let missingKeywords = [];
-                let status = 'missing';
+        function evaluateWithAdvancedAlgorithm(question, userAnswer) {
+            // Try to use advanced scorer if available
+            if (recitationScorer && typeof questionDatabase !== 'undefined' && questionDatabase[question]) {
+                const result = recitationScorer.evaluateAnswer(question, userAnswer);
                 
-                const hasRequired = item.requiredKeywords.every(kw => 
-                    lowerAnswer.includes(kw.toLowerCase())
-                );
-                
-                if (hasRequired) {
-                    item.keywords.forEach(keyword => {
-                        if (lowerAnswer.includes(keyword.toLowerCase())) {
-                            foundKeywords.push(keyword);
-                        } else {
-                            missingKeywords.push(keyword);
-                        }
-                    });
-                    
-                    const coverage = foundKeywords.length / item.keywords.length;
-                    
-                    if (coverage >= 0.7) {
-                        itemScore = item.points;
-                        status = 'found';
-                    } else if (coverage >= 0.4) {
-                        itemScore = item.points * 0.6;
-                        status = 'partial';
-                    } else {
-                        itemScore = item.points * 0.3;
-                        status = 'partial';
-                    }
-                } else {
-                    item.keywords.forEach(keyword => {
-                        if (lowerAnswer.includes(keyword.toLowerCase())) {
-                            foundKeywords.push(keyword);
-                        } else {
-                            missingKeywords.push(keyword);
-                        }
-                    });
-                    
-                    if (foundKeywords.length > 0) {
-                        itemScore = item.points * 0.2;
-                        status = 'partial';
-                    }
+                // Ensure the evaluation has all required fields
+                if (result && result.overallScore !== undefined) {
+                    return {
+                        score: Math.round(result.overallScore),
+                        rubricResults: result.rubricEvaluations || [],
+                        performanceLevel: result.performanceLevel || 'Developing',
+                        strengths: result.strengths || [],
+                        improvements: result.areasForImprovement || [],
+                        feedback: result.detailedFeedback || '',
+                        wordCount: userAnswer.trim().split(/\s+/).length,
+                        sentenceCount: userAnswer.split(/[.!?]+/).filter(s => s.trim().length > 0).length,
+                        algorithmUsed: 'Advanced Fuzzy Matching'
+                    };
                 }
-                
-                totalScore += itemScore;
-                
-                rubricResults.push({
-                    ...item,
-                    earnedPoints: Math.round(itemScore * 10) / 10,
-                    status: status,
-                    foundKeywords: foundKeywords,
-                    missingKeywords: missingKeywords
-                });
+            }
+            
+            // Fallback to basic evaluation
+            console.warn('Using fallback evaluation method');
+            return basicEvaluation(question, userAnswer);
+        }
+
+        function basicEvaluation(question, userAnswer) {
+            // Simple keyword-based evaluation as fallback
+            const lowerAnswer = userAnswer.toLowerCase();
+            let score = 40; // Base score
+            
+            const keywords = {
+                "Define inertia. Give its classification.": ["inertia", "resist", "rest", "motion", "direction", "three", "types"],
+                "Classify the types of force based on their application.": ["force", "contact", "non-contact", "friction", "gravitational", "magnetic"]
+            };
+            
+            const questionKeywords = keywords[question] || [];
+            let foundCount = 0;
+            
+            questionKeywords.forEach(keyword => {
+                if (lowerAnswer.includes(keyword)) {
+                    foundCount++;
+                    score += 8;
+                }
             });
             
-            // Grammar evaluation
-            let grammarScore = 0;
-            const sentences = userAnswer.split(/[.!?]+/).filter(s => s.trim().length > 10);
-            const wordCount = userAnswer.trim().split(/\s+/).length;
-            
-            if (sentences.length >= 3) grammarScore += 5;
-            else if (sentences.length >= 2) grammarScore += 3;
-            else if (sentences.length >= 1) grammarScore += 1;
-            
-            if (wordCount >= 30) grammarScore += 5;
-            else if (wordCount >= 20) grammarScore += 3;
-            else if (wordCount >= 10) grammarScore += 1;
-            
-            totalScore += grammarScore;
-            
             return {
-                score: Math.min(Math.round(totalScore), 100),
-                rubricResults: rubricResults,
-                grammarScore: grammarScore,
-                wordCount: wordCount,
-                sentenceCount: sentences.length,
-                maxScore: rubric.rubric.reduce((sum, item) => sum + item.points, 0) + rubric.grammarPoints
+                score: Math.min(score, 100),
+                rubricResults: [],
+                performanceLevel: score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : 'Developing',
+                strengths: foundCount > 0 ? ['You used some key terminology'] : [],
+                improvements: ['Include more specific details', 'Use technical vocabulary'],
+                feedback: `You used ${foundCount} out of ${questionKeywords.length} key terms.`,
+                wordCount: userAnswer.trim().split(/\s+/).length,
+                sentenceCount: userAnswer.split(/[.!?]+/).filter(s => s.trim().length > 0).length,
+                algorithmUsed: 'Basic Keyword Matching'
             };
         }
 
@@ -1790,6 +1647,18 @@
             
             let feedbackHTML = '';
             
+            // Algorithm indicator
+            feedbackHTML += `<div class="info-badge">
+                <strong>🤖 Evaluation Method:</strong> ${evaluation.algorithmUsed || 'Advanced AI Scoring'}
+            </div>`;
+            
+            // Performance level
+            feedbackHTML += `<div style="text-align: center; margin: 20px 0;">
+                <div style="display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 25px; font-size: 1.2em; font-weight: bold;">
+                    ${evaluation.performanceLevel || 'Developing'}
+                </div>
+            </div>`;
+            
             // Comparison view
             feedbackHTML += '<div class="comparison-view">';
             feedbackHTML += '<div class="comparison-box">';
@@ -1804,80 +1673,58 @@
             feedbackHTML += '</div>';
             feedbackHTML += '</div>';
             
-            // Rubric breakdown
+            // Rubric breakdown if available
             if (evaluation.rubricResults && evaluation.rubricResults.length > 0) {
                 feedbackHTML += '<div class="rubric-breakdown">';
                 feedbackHTML += '<h3 style="color: #667eea; margin-bottom: 20px;">🎯 Detailed Evaluation Breakdown</h3>';
                 
                 evaluation.rubricResults.forEach((result) => {
-                    const percentage = Math.round((result.earnedPoints / result.points) * 100);
+                    const statusClass = result.matchScore >= 0.8 ? 'found' : result.matchScore >= 0.5 ? 'partial' : 'missing';
+                    const percentage = Math.round(result.matchScore * 100);
                     
-                    feedbackHTML += `<div class="rubric-item ${result.status}">`;
+                    feedbackHTML += `<div class="rubric-item ${statusClass}">`;
                     feedbackHTML += '<div class="rubric-header">';
-                    feedbackHTML += `<strong>${result.concept}</strong>`;
-                    feedbackHTML += `<strong style="font-size: 1.2em;">${result.earnedPoints}/${result.points} (${percentage}%)</strong>`;
+                    feedbackHTML += `<strong>${result.concept || 'Concept'}</strong>`;
+                    feedbackHTML += `<strong style="font-size: 1.2em;">${result.pointsAwarded}/${result.maxPoints} (${percentage}%)</strong>`;
                     feedbackHTML += '</div>';
                     
-                    feedbackHTML += `<p style="color: #666; margin: 10px 0;">${result.description}</p>`;
-                    
-                    if (result.foundKeywords.length > 0) {
+                    if (result.matchedPhrases && result.matchedPhrases.length > 0) {
                         feedbackHTML += '<div style="margin-top: 10px;">';
-                        feedbackHTML += '<strong style="color: #4caf50;">✓ Found Keywords:</strong><br>';
-                        result.foundKeywords.forEach(kw => {
-                            feedbackHTML += `<span class="keyword-badge found">${kw}</span>`;
-                        });
+                        feedbackHTML += '<strong style="color: #4caf50;">✓ Found:</strong> ';
+                        feedbackHTML += result.matchedPhrases.map(p => `<span class="keyword-badge found">${p}</span>`).join('');
                         feedbackHTML += '</div>';
                     }
                     
-                    if (result.missingKeywords.length > 0) {
-                        feedbackHTML += '<div style="margin-top: 10px;">';
-                        feedbackHTML += '<strong style="color: #f44336;">✗ Missing Keywords:</strong><br>';
-                        result.missingKeywords.forEach(kw => {
-                            feedbackHTML += `<span class="keyword-badge missing">${kw}</span>`;
-                        });
-                        feedbackHTML += '</div>';
+                    if (result.feedback) {
+                        feedbackHTML += `<p style="color: #666; margin-top: 10px;">${result.feedback}</p>`;
                     }
                     
                     feedbackHTML += '</div>';
                 });
                 
-                // Grammar score
-                feedbackHTML += '<div class="rubric-item ' + (evaluation.grammarScore >= 8 ? 'found' : (evaluation.grammarScore >= 5 ? 'partial' : 'missing')) + '">';
-                feedbackHTML += '<div class="rubric-header">';
-                feedbackHTML += '<strong>Grammar & Structure</strong>';
-                feedbackHTML += `<strong style="font-size: 1.2em;">${evaluation.grammarScore}/10</strong>`;
-                feedbackHTML += '</div>';
-                feedbackHTML += `<p style="color: #666; margin-top: 10px;">Sentence structure, word count, and overall presentation</p>`;
-                feedbackHTML += '</div>';
-                
                 feedbackHTML += '</div>';
             }
             
-            // Recommendations
-            feedbackHTML += '<div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 25px; border-left: 4px solid #ffc107;">';
-            feedbackHTML += '<h4 style="color: #856404; margin-bottom: 15px;">💡 Recommendations for Improvement</h4>';
-            feedbackHTML += '<ul style="margin-left: 20px; line-height: 1.8; color: #856404;">';
-            
-            if (evaluation.score >= 80) {
-                feedbackHTML += '<li><strong>Excellent work!</strong> You demonstrated strong understanding of key concepts.</li>';
-            } else if (evaluation.score >= 60) {
-                feedbackHTML += '<li><strong>Good effort!</strong> You covered several important points.</li>';
-                feedbackHTML += '<li>Focus on including all required keywords mentioned in the expected answer.</li>';
-            } else {
-                feedbackHTML += '<li><strong>Keep practicing!</strong> Review the expected answer carefully.</li>';
-                feedbackHTML += '<li>Pay special attention to the missing keywords highlighted above.</li>';
+            // Strengths and improvements
+            if (evaluation.strengths && evaluation.strengths.length > 0) {
+                feedbackHTML += '<div style="background: #e8f5e9; padding: 20px; border-radius: 10px; margin-top: 25px; border-left: 4px solid #4caf50;">';
+                feedbackHTML += '<h4 style="color: #2e7d32; margin-bottom: 15px;">💪 Strengths</h4>';
+                feedbackHTML += '<ul style="margin-left: 20px; line-height: 1.8; color: #2e7d32;">';
+                evaluation.strengths.forEach(strength => {
+                    feedbackHTML += `<li>${strength}</li>`;
+                });
+                feedbackHTML += '</ul></div>';
             }
             
-            const missingConcepts = evaluation.rubricResults.filter(r => r.status === 'missing' || r.earnedPoints < r.points * 0.5);
-            if (missingConcepts.length > 0) {
-                feedbackHTML += '<li><strong>Key concepts to study:</strong> ' + missingConcepts.map(c => c.concept).join(', ') + '</li>';
+            if (evaluation.improvements && evaluation.improvements.length > 0) {
+                feedbackHTML += '<div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 25px; border-left: 4px solid #ffc107;">';
+                feedbackHTML += '<h4 style="color: #856404; margin-bottom: 15px;">💡 Areas for Improvement</h4>';
+                feedbackHTML += '<ul style="margin-left: 20px; line-height: 1.8; color: #856404;">';
+                evaluation.improvements.forEach(improvement => {
+                    feedbackHTML += `<li>${improvement}</li>`;
+                });
+                feedbackHTML += '</ul></div>';
             }
-            
-            if (evaluation.wordCount < 20) {
-                feedbackHTML += '<li>Try to elaborate more. Aim for at least 30-40 words.</li>';
-            }
-            
-            feedbackHTML += '</ul></div>';
             
             feedbackText.innerHTML = feedbackHTML;
         }
@@ -1885,8 +1732,6 @@
         function tryAgain() {
             document.getElementById('feedback-section').classList.remove('active');
             document.getElementById('answer-display').style.display = 'block';
-            
-            // Keep the previous answer for reference - don't clear it
         }
 
         function nextQuestion() {
