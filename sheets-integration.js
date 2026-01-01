@@ -2,37 +2,36 @@
  * Google Sheets Integration Module for Acharya108 Recitation App
  * Integrates with Google Sheets: 19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo
  * 
- * IMPORTANT: To use this integration, you must publish your Google Sheets:
- * 1. Open your Google Sheet
- * 2. File → Share → Publish to web
- * 3. Select each sheet and publish as CSV
- * 4. Update the gid values below if needed
+ * Sheet Structure:
+ * - Sheet 1: Questions (global_question_id, question_code, board, medium, grade, subject, lesson_no, question_no, question_text, lesson_id)
+ * - Sheet 2: Lesson (lesson_id, lesson_name, lesson_doc_id)
+ * - Sheet 3: Master Answer (global_question_id, level_basic, level_elementary, level_intermediate, level_advanced, level_prodigy)
  */
 
 class SheetsIntegration {
     constructor() {
         this.SHEET_ID = '19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo';
         
-        // GID values for each sheet (update these based on your actual sheet GIDs)
-        // To find GID: Open sheet tab, look at URL: /edit#gid=XXXXXXXX
+        // GID values for each sheet (default values - update if different)
         this.SHEET_GIDS = {
-            questions: '0',        // First sheet (Questions)
-            rubrics: '1',          // Second sheet (Rubrics)
-            progress: '2'          // Third sheet (Student Progress)
+            questions: '0',        // Questions sheet
+            lessons: '1',          // Lesson sheet
+            answers: '2'           // Master Answer sheet
         };
         
         // Published CSV URLs for each sheet
         this.SHEET_URLS = {
             questions: `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/export?format=csv&gid=${this.SHEET_GIDS.questions}`,
-            rubrics: `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/export?format=csv&gid=${this.SHEET_GIDS.rubrics}`,
-            progress: `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/export?format=csv&gid=${this.SHEET_GIDS.progress}`
+            lessons: `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/export?format=csv&gid=${this.SHEET_GIDS.lessons}`,
+            answers: `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/export?format=csv&gid=${this.SHEET_GIDS.answers}`
         };
         
         // Cache for loaded data
         this.cache = {
             questions: null,
-            rubrics: null,
-            progress: null,
+            lessons: null,
+            answers: null,
+            merged: null,  // Questions with answers merged
             lastUpdated: null
         };
         
@@ -109,7 +108,7 @@ class SheetsIntegration {
     async fetchSheet(sheetKey) {
         try {
             const url = this.SHEET_URLS[sheetKey];
-            console.log(`📥 Fetching ${sheetKey} from:`, url);
+            console.log(`📥 Fetching ${sheetKey} from Google Sheets...`);
             
             const response = await fetch(url, {
                 method: 'GET',
@@ -165,25 +164,32 @@ class SheetsIntegration {
         try {
             console.log('🔄 Loading data from Google Sheets...');
             
-            const [questionsData, rubricsData, progressData] = await Promise.all([
+            const [questionsData, lessonsData, answersData] = await Promise.all([
                 this.fetchSheet('questions'),
-                this.fetchSheet('rubrics'),
-                this.fetchSheet('progress')
+                this.fetchSheet('lessons'),
+                this.fetchSheet('answers')
             ]);
 
-            // Process data based on your sheet structure
+            // Process data
+            const questions = this.processQuestionsSheet(questionsData);
+            const lessons = this.processLessonsSheet(lessonsData);
+            const answers = this.processAnswersSheet(answersData);
+            const merged = this.mergeQuestionsAndAnswers(questions, answers, lessons);
+
             this.cache = {
-                questions: this.processQuestionsSheet(questionsData),
-                rubrics: this.processRubricsSheet(rubricsData),
-                progress: this.processProgressSheet(progressData),
+                questions,
+                lessons,
+                answers,
+                merged,
                 lastUpdated: Date.now()
             };
 
             console.log('✅ All sheets loaded successfully!');
             console.log('📊 Summary:', {
-                questions: this.cache.questions.all.length,
-                rubrics: Object.keys(this.cache.rubrics).length,
-                progress: this.cache.progress.all.length
+                questions: questions.all.length,
+                lessons: lessons.all.length,
+                answers: answers.all.length,
+                merged: merged.all.length
             });
             
             return this.cache;
@@ -198,35 +204,33 @@ class SheetsIntegration {
     }
 
     /**
-     * Process questions sheet data
-     * Expected columns: ID, Grade, Subject, Lesson, Type, Question, BasicAnswer, 
-     * ElementaryAnswer, IntermediateAnswer, AdvancedAnswer, ExpertAnswer, Keywords
+     * Process Questions sheet
      */
     processQuestionsSheet(data) {
         const questions = {
+            byId: {},
             byGrade: {},
             bySubject: {},
             byLesson: {},
             all: []
         };
 
-        data.forEach((row, index) => {
+        data.forEach(row => {
             const question = {
-                id: row.ID || row.id || `q_${index}`,
-                grade: parseInt(row.Grade || row.grade) || 10,
-                subject: (row.Subject || row.subject || 'science').toLowerCase(),
-                lesson: parseInt(row.Lesson || row.lesson) || 1,
-                type: (row.Type || row.type || 'brief').toLowerCase(),
-                question: row.Question || row.question || '',
-                answers: {
-                    basic: row.BasicAnswer || row.basicAnswer || '',
-                    elementary: row.ElementaryAnswer || row.elementaryAnswer || '',
-                    intermediate: row.IntermediateAnswer || row.intermediateAnswer || '',
-                    advanced: row.AdvancedAnswer || row.advancedAnswer || '',
-                    expert: row.ExpertAnswer || row.expertAnswer || ''
-                },
-                keywords: (row.Keywords || row.keywords || '').split(',').map(k => k.trim()).filter(k => k)
+                globalQuestionId: row.global_question_id || row.globalQuestionId || '',
+                questionCode: row.question_code || row.questionCode || '',
+                board: (row.board || 'tn').toLowerCase(),
+                medium: (row.medium || 'english').toLowerCase(),
+                grade: parseInt(row.grade) || 10,
+                subject: (row.subject || '').toLowerCase(),
+                lessonNo: parseInt(row.lesson_no || row.lessonNo) || 1,
+                questionNo: parseInt(row.question_no || row.questionNo) || 1,
+                questionText: row.question_text || row.questionText || '',
+                lessonId: row.lesson_id || row.lessonId || ''
             };
+
+            // Index by global question ID
+            questions.byId[question.globalQuestionId] = question;
 
             // Index by grade
             if (!questions.byGrade[question.grade]) {
@@ -241,7 +245,7 @@ class SheetsIntegration {
             questions.bySubject[question.subject].push(question);
 
             // Index by lesson
-            const lessonKey = `${question.grade}_${question.subject}_${question.lesson}`;
+            const lessonKey = `${question.grade}_${question.subject}_${question.lessonNo}`;
             if (!questions.byLesson[lessonKey]) {
                 questions.byLesson[lessonKey] = [];
             }
@@ -254,85 +258,127 @@ class SheetsIntegration {
     }
 
     /**
-     * Process rubrics sheet data
-     * Expected columns: QuestionID, Concept, Description, MaxPoints, Keywords, Importance
+     * Process Lessons sheet
      */
-    processRubricsSheet(data) {
-        const rubrics = {};
-
-        data.forEach(row => {
-            const questionId = row.QuestionID || row.questionId || row.Question || row.question;
-            
-            if (!questionId) return;
-            
-            if (!rubrics[questionId]) {
-                rubrics[questionId] = [];
-            }
-
-            rubrics[questionId].push({
-                concept: row.Concept || row.concept || '',
-                description: row.Description || row.description || '',
-                maxPoints: parseFloat(row.MaxPoints || row.maxPoints) || 10,
-                keywords: (row.Keywords || row.keywords || '').split(',').map(k => k.trim()).filter(k => k),
-                importance: (row.Importance || row.importance || 'medium').toLowerCase()
-            });
-        });
-
-        return rubrics;
-    }
-
-    /**
-     * Process student progress sheet data
-     * Expected columns: StudentID, QuestionID, Attempt, Score, Timestamp, Response
-     */
-    processProgressSheet(data) {
-        const progress = {
-            byStudent: {},
-            byQuestion: {},
+    processLessonsSheet(data) {
+        const lessons = {
+            byId: {},
             all: []
         };
 
         data.forEach(row => {
-            const record = {
-                studentId: row.StudentID || row.studentId || 'anonymous',
-                questionId: row.QuestionID || row.questionId || '',
-                attempt: parseInt(row.Attempt || row.attempt) || 1,
-                score: parseFloat(row.Score || row.score) || 0,
-                timestamp: row.Timestamp || row.timestamp || new Date().toISOString(),
-                response: row.Response || row.response || ''
+            const lesson = {
+                lessonId: row.lesson_id || row.lessonId || '',
+                lessonName: row.lesson_name || row.lessonName || '',
+                lessonDocId: row.lesson_doc_id || row.lessonDocId || ''
             };
 
-            // Index by student
-            if (!progress.byStudent[record.studentId]) {
-                progress.byStudent[record.studentId] = [];
-            }
-            progress.byStudent[record.studentId].push(record);
-            
-            // Index by question
-            if (!progress.byQuestion[record.questionId]) {
-                progress.byQuestion[record.questionId] = [];
-            }
-            progress.byQuestion[record.questionId].push(record);
-
-            progress.all.push(record);
+            lessons.byId[lesson.lessonId] = lesson;
+            lessons.all.push(lesson);
         });
 
-        return progress;
+        return lessons;
+    }
+
+    /**
+     * Process Master Answer sheet
+     */
+    processAnswersSheet(data) {
+        const answers = {
+            byId: {},
+            all: []
+        };
+
+        data.forEach(row => {
+            const answer = {
+                globalQuestionId: row.global_question_id || row.globalQuestionId || '',
+                levels: {
+                    basic: row.level_basic || row.levelBasic || '',
+                    elementary: row.level_elementary || row.levelElementary || '',
+                    intermediate: row.level_intermediate || row.levelIntermediate || '',
+                    advanced: row.level_advanced || row.levelAdvanced || '',
+                    prodigy: row.level_prodigy || row.levelProdigy || ''
+                }
+            };
+
+            answers.byId[answer.globalQuestionId] = answer;
+            answers.all.push(answer);
+        });
+
+        return answers;
+    }
+
+    /**
+     * Merge questions with their answers and lesson info
+     */
+    mergeQuestionsAndAnswers(questions, answers, lessons) {
+        const merged = {
+            byId: {},
+            byGrade: {},
+            bySubject: {},
+            byLesson: {},
+            all: []
+        };
+
+        questions.all.forEach(question => {
+            const answer = answers.byId[question.globalQuestionId] || { levels: {} };
+            const lesson = lessons.byId[question.lessonId] || {};
+
+            const mergedItem = {
+                ...question,
+                lessonName: lesson.lessonName || '',
+                lessonDocId: lesson.lessonDocId || '',
+                answers: {
+                    basic: answer.levels.basic || '',
+                    elementary: answer.levels.elementary || '',
+                    intermediate: answer.levels.intermediate || '',
+                    advanced: answer.levels.advanced || '',
+                    prodigy: answer.levels.prodigy || '',
+                    expert: answer.levels.prodigy || '' // Alias for compatibility
+                }
+            };
+
+            // Index by ID
+            merged.byId[mergedItem.globalQuestionId] = mergedItem;
+
+            // Index by grade
+            if (!merged.byGrade[mergedItem.grade]) {
+                merged.byGrade[mergedItem.grade] = [];
+            }
+            merged.byGrade[mergedItem.grade].push(mergedItem);
+
+            // Index by subject
+            if (!merged.bySubject[mergedItem.subject]) {
+                merged.bySubject[mergedItem.subject] = [];
+            }
+            merged.bySubject[mergedItem.subject].push(mergedItem);
+
+            // Index by lesson
+            const lessonKey = `${mergedItem.grade}_${mergedItem.subject}_${mergedItem.lessonNo}`;
+            if (!merged.byLesson[lessonKey]) {
+                merged.byLesson[lessonKey] = [];
+            }
+            merged.byLesson[lessonKey].push(mergedItem);
+
+            merged.all.push(mergedItem);
+        });
+
+        return merged;
     }
 
     /**
      * Get questions for specific grade, subject, and lesson
      */
-    async getQuestions(grade, subject, lesson = null) {
+    async getQuestions(grade, subject, lessonNo = null) {
         try {
             const data = await this.loadAllSheets();
             
-            if (lesson !== null) {
-                const lessonKey = `${grade}_${subject}_${lesson}`;
-                return data.questions.byLesson[lessonKey] || [];
+            if (lessonNo !== null) {
+                const lessonKey = `${grade}_${subject}_${lessonNo}`;
+                return data.merged.byLesson[lessonKey] || [];
             }
             
-            let questions = data.questions.byGrade[grade] || [];
+            let questions = data.merged.byGrade[grade] || [];
             
             if (subject) {
                 questions = questions.filter(q => q.subject === subject);
@@ -351,32 +397,19 @@ class SheetsIntegration {
     async getQuestion(questionIdOrText) {
         try {
             const data = await this.loadAllSheets();
-            return data.questions.all.find(q => 
-                q.id === questionIdOrText || 
-                q.question === questionIdOrText ||
-                q.question.toLowerCase().includes(questionIdOrText.toLowerCase())
+            
+            // Try by ID first
+            if (data.merged.byId[questionIdOrText]) {
+                return data.merged.byId[questionIdOrText];
+            }
+            
+            // Then search by text
+            return data.merged.all.find(q => 
+                q.questionText === questionIdOrText ||
+                q.questionText.toLowerCase().includes(questionIdOrText.toLowerCase())
             );
         } catch (error) {
             console.error('Error getting question:', error);
-            return null;
-        }
-    }
-
-    /**
-     * Get rubric for a specific question
-     */
-    async getRubric(questionIdOrText) {
-        try {
-            const data = await this.loadAllSheets();
-            const question = await this.getQuestion(questionIdOrText);
-            
-            if (!question) return null;
-            
-            return data.rubrics[question.id] || 
-                   data.rubrics[question.question] || 
-                   null;
-        } catch (error) {
-            console.error('Error getting rubric:', error);
             return null;
         }
     }
@@ -387,7 +420,7 @@ class SheetsIntegration {
     async getAnswer(questionIdOrText, level = 'basic') {
         try {
             const question = await this.getQuestion(questionIdOrText);
-            if (!question) return null;
+            if (!question || !question.answers) return null;
             
             return question.answers[level] || question.answers.basic;
         } catch (error) {
@@ -397,14 +430,27 @@ class SheetsIntegration {
     }
 
     /**
-     * Get student progress for a specific student
+     * Get lesson information
      */
-    async getStudentProgress(studentId) {
+    async getLesson(lessonId) {
         try {
             const data = await this.loadAllSheets();
-            return data.progress.byStudent[studentId] || [];
+            return data.lessons.byId[lessonId] || null;
         } catch (error) {
-            console.error('Error getting student progress:', error);
+            console.error('Error getting lesson:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Get all lessons
+     */
+    async getAllLessons() {
+        try {
+            const data = await this.loadAllSheets();
+            return data.lessons.all;
+        } catch (error) {
+            console.error('Error getting lessons:', error);
             return [];
         }
     }
@@ -415,8 +461,9 @@ class SheetsIntegration {
     clearCache() {
         this.cache = {
             questions: null,
-            rubrics: null,
-            progress: null,
+            lessons: null,
+            answers: null,
+            merged: null,
             lastUpdated: null
         };
         console.log('🗑️ Cache cleared');
@@ -430,7 +477,12 @@ class SheetsIntegration {
             isLoading: this.isLoading,
             isCached: this.isCacheValid(),
             error: this.loadError,
-            lastUpdated: this.cache.lastUpdated ? new Date(this.cache.lastUpdated).toLocaleString() : null
+            lastUpdated: this.cache.lastUpdated ? new Date(this.cache.lastUpdated).toLocaleString() : null,
+            dataCount: this.cache.merged ? {
+                questions: this.cache.merged.all.length,
+                lessons: this.cache.lessons.all.length,
+                answers: this.cache.answers.all.length
+            } : null
         };
     }
 }
