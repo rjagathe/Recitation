@@ -15,8 +15,8 @@ class SheetsIntegration {
         // GID values for each sheet (default values - update if different)
         this.SHEET_GIDS = {
             questions: '0',        // Questions sheet
-            lessons: '1',          // Lesson sheet
-            answers: '2'           // Master Answer sheet
+            lessons: '2069783031',          // Lesson sheet
+            answers: '1282895725'           // Master Answer sheet
         };
         
         // Published CSV URLs for each sheet
