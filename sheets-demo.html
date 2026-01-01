@@ -315,7 +315,14 @@
             border-left: 5px solid #ffc107;
             margin: 20px 0;
             font-family: 'Courier New', monospace;
-            font-size: 0.9em;
+            font-size: 0.85em;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .debug-box pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -354,6 +361,7 @@
             <button class="btn secondary" onclick="showAllQuestions()" id="allQuestionsBtn">📝 Show All Questions</button>
             <button class="btn secondary" onclick="testLessons()" id="lessonsBtn">📚 Show Lessons</button>
             <button class="btn secondary" onclick="testAnswers()" id="answersBtn">💡 Test Answers</button>
+            <button class="btn secondary" onclick="showDebugInfo()" id="debugBtn">🐛 Show Debug Info</button>
             <button class="btn secondary" onclick="clearCache()">🗑️ Clear Cache</button>
         </div>
 
@@ -398,6 +406,52 @@
             }
         }
 
+        // Show detailed debug information
+        function showDebugInfo() {
+            const resultsDiv = document.getElementById('resultsContainer');
+            
+            if (!currentData) {
+                resultsDiv.innerHTML = '<div class="error">❌ No data loaded. Click "Load All Sheets" first.</div>';
+                return;
+            }
+
+            const sample = currentData.merged.all[0];
+            
+            let html = `
+                <div class="data-section">
+                    <h2>🐛 Debug Information</h2>
+                    
+                    <h3 style="color: #667eea; margin: 20px 0;">Sample Question Object:</h3>
+                    <div class="debug-box">
+                        <pre>${JSON.stringify(sample, null, 2)}</pre>
+                    </div>
+
+                    <h3 style="color: #667eea; margin: 20px 0;">Answer Object Check:</h3>
+                    <div class="debug-box">
+                        Has answers property: ${sample.hasOwnProperty('answers')}<br>
+                        Answers object: ${JSON.stringify(sample.answers, null, 2)}<br>
+                        <br>
+                        Basic answer exists: ${!!(sample.answers && sample.answers.basic)}<br>
+                        Basic answer value: "${sample.answers ? sample.answers.basic : 'N/A'}"<br>
+                        <br>
+                        Elementary answer exists: ${!!(sample.answers && sample.answers.elementary)}<br>
+                        Intermediate answer exists: ${!!(sample.answers && sample.answers.intermediate)}<br>
+                        Advanced answer exists: ${!!(sample.answers && sample.answers.advanced)}<br>
+                        Prodigy answer exists: ${!!(sample.answers && sample.answers.prodigy)}<br>
+                    </div>
+
+                    <h3 style="color: #667eea; margin: 20px 0;">All Questions Summary:</h3>
+                    <div class="debug-box">
+                        Total questions: ${currentData.merged.all.length}<br>
+                        Questions with answers: ${currentData.merged.all.filter(q => q.answers && q.answers.basic).length}<br>
+                        Questions without answers: ${currentData.merged.all.filter(q => !q.answers || !q.answers.basic).length}<br>
+                    </div>
+                </div>
+            `;
+
+            resultsDiv.innerHTML = html;
+        }
+
         // Load all sheets
         async function loadAllData() {
             const resultsDiv = document.getElementById('resultsContainer');
@@ -411,11 +465,16 @@
                 // Show debug info
                 console.log('Loaded data:', currentData);
                 console.log('Sample question:', currentData.merged.all[0]);
+                console.log('Sample question answers:', currentData.merged.all[0].answers);
                 
                 // Get unique values for debugging
                 const grades = [...new Set(currentData.merged.all.map(q => q.grade))];
                 const subjects = [...new Set(currentData.merged.all.map(q => q.subject))];
                 const boards = [...new Set(currentData.merged.all.map(q => q.board))];
+                
+                // Count questions with answers
+                const withAnswers = currentData.merged.all.filter(q => q.answers && q.answers.basic).length;
+                const withoutAnswers = currentData.merged.all.length - withAnswers;
                 
                 resultsDiv.innerHTML = `
                     <div class="success">
@@ -434,15 +493,19 @@
                                 <div class="stat-label">Answers</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-number">${currentData.merged.all.length}</div>
-                                <div class="stat-label">Merged Records</div>
+                                <div class="stat-number">${withAnswers}</div>
+                                <div class="stat-label">With Answers</div>
                             </div>
                         </div>
                         <div class="debug-box">
                             <strong>🐛 Debug Info:</strong><br>
                             Grades found: ${grades.join(', ')}<br>
                             Subjects found: ${subjects.join(', ')}<br>
-                            Boards found: ${boards.join(', ')}
+                            Boards found: ${boards.join(', ')}<br>
+                            Questions with answers: ${withAnswers}<br>
+                            Questions without answers: ${withoutAnswers}<br>
+                            <br>
+                            ${withoutAnswers > 0 ? '<span style="color: red;">⚠️ Some questions don\'t have answers! Check the "Show Debug Info" button.</span>' : '✅ All questions have answers!'}
                         </div>
                         <p style="margin-top: 20px;">All data loaded and merged successfully! Try the other test buttons above.</p>
                     </div>
@@ -550,6 +613,13 @@
                 let html = '<div class="data-section"><h2>📝 All Questions (Showing first 5)</h2>';
                 
                 questions.slice(0, 5).forEach((q, index) => {
+                    const hasAnswer = q.answers && q.answers.basic;
+                    console.log(`Question ${index + 1} answer check:`, {
+                        hasAnswers: !!q.answers,
+                        hasBasic: !!(q.answers && q.answers.basic),
+                        basicValue: q.answers ? q.answers.basic : 'N/A'
+                    });
+                    
                     html += `
                         <div class="question-card">
                             <h3>Question ${index + 1}</h3>
@@ -563,12 +633,12 @@
                             </div>
                             <p style="margin: 15px 0; font-size: 1.1em; color: #333;"><strong>Question:</strong> ${q.questionText}</p>
                             <p style="margin: 10px 0; color: #666;"><strong>Lesson:</strong> ${q.lessonName || 'N/A'}</p>
-                            ${q.answers && q.answers.basic ? `
+                            ${hasAnswer ? `
                                 <div class="answer-level">
                                     <strong>📌 Basic Answer:</strong>
                                     <div class="answer-text">${q.answers.basic.substring(0, 150)}${q.answers.basic.length > 150 ? '...' : ''}</div>
                                 </div>
-                            ` : '<p style="color: red;">No answer found</p>'}
+                            ` : '<p style="color: red; background: #ffebee; padding: 10px; border-radius: 5px;">❌ No answer found - Check Debug Info</p>'}
                         </div>
                     `;
                 });
@@ -641,6 +711,9 @@
                 const sample = currentData.merged.all[0];
                 
                 console.log('Sample question for answers:', sample);
+                console.log('Answers object:', sample.answers);
+                console.log('Has answers?', !!sample.answers);
+                console.log('Has basic?', !!(sample.answers && sample.answers.basic));
                 
                 let html = `
                     <div class="data-section">
@@ -659,15 +732,21 @@
                 const colors = ['#2196F3', '#4caf50', '#ff9800', '#f44336', '#9c27b0'];
                 const emojis = ['📌', '📘', '📙', '📚', '🌟'];
                 
-                levels.forEach((level, index) => {
-                    const answerText = sample.answers && sample.answers[level] ? sample.answers[level] : 'No answer available';
-                    html += `
-                        <div class="answer-level" style="border-left-color: ${colors[index]};">
-                            <strong>${emojis[index]} ${level.charAt(0).toUpperCase() + level.slice(1)} Level:</strong>
-                            <div class="answer-text">${answerText}</div>
-                        </div>
-                    `;
-                });
+                if (!sample.answers) {
+                    html += '<div class="error">❌ No answers object found. Click "Show Debug Info" for details.</div>';
+                } else {
+                    levels.forEach((level, index) => {
+                        const answerText = sample.answers[level];
+                        const hasAnswer = answerText && answerText.trim().length > 0;
+                        
+                        html += `
+                            <div class="answer-level" style="border-left-color: ${colors[index]};">
+                                <strong>${emojis[index]} ${level.charAt(0).toUpperCase() + level.slice(1)} Level:</strong>
+                                <div class="answer-text">${hasAnswer ? answerText : '<span style="color: red;">❌ No answer available</span>'}</div>
+                            </div>
+                        `;
+                    });
+                }
                 
                 html += '</div></div>';
                 resultsDiv.innerHTML = html;
@@ -689,7 +768,7 @@
 
         // Disable/enable buttons during loading
         function disableButtons(disabled) {
-            const buttons = ['loadBtn', 'statsBtn', 'allQuestionsBtn', 'lessonsBtn', 'answersBtn'];
+            const buttons = ['loadBtn', 'statsBtn', 'allQuestionsBtn', 'lessonsBtn', 'answersBtn', 'debugBtn'];
             buttons.forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) btn.disabled = disabled;
