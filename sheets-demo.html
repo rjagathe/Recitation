@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets Integration Demo - Acharya108</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .status-panel {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .status-item {
+            margin: 10px 0;
+            font-size: 1.05em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.secondary {
+            background: white;
+            color: #667eea;
+            border: 3px solid #667eea;
+        }
+
+        .data-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+        }
+
+        .data-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .question-card {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .question-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .answer-level {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .answer-level strong {
+            color: #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #f44336;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            margin: 20px 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #2196F3;
+            margin: 20px 0;
+        }
+
+        .info-box h3 {
+            color: #1565C0;
+            margin-bottom: 10px;
+        }
+
+        .info-box ol, .info-box ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 Google Sheets Integration Demo</h1>
+        <p class="subtitle">Test your Google Sheets connection and data loading</p>
+
+        <div class="info-box">
+            <h3>🔑 Setup Instructions</h3>
+            <ol>
+                <li>Open your Google Sheet: <code>19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo</code></li>
+                <li>Click <strong>File → Share → Publish to web</strong></li>
+                <li>For each of the 3 sheets:
+                    <ul>
+                        <li>Select the sheet tab</li>
+                        <li>Choose "Comma-separated values (.csv)"</li>
+                        <li>Click "Publish"</li>
+                    </ul>
+                </li>
+                <li>Note the GID numbers from the URL (e.g., <code>#gid=0</code>)</li>
+                <li>Update <code>SHEET_GIDS</code> in sheets-integration.js if needed</li>
+            </ol>
+        </div>
+
+        <div class="status-panel" id="statusPanel">
+            <h3>📊 Connection Status</h3>
+            <div class="status-item">🔗 Sheet ID: <code>19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo</code></div>
+            <div class="status-item" id="loadingStatus">⏳ Not loaded yet</div>
+            <div class="status-item" id="cacheStatus">Cache: Empty</div>
+            <div class="status-item" id="errorStatus"></div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn" onclick="loadSheets()">🔄 Load All Sheets</button>
+            <button class="btn secondary" onclick="clearCache()">🗑️ Clear Cache</button>
+            <button class="btn secondary" onclick="testQuestions()">📝 Test Questions</button>
+            <button class="btn secondary" onclick="testRubrics()">🎯 Test Rubrics</button>
+        </div>
+
+        <div id="resultsContainer"></div>
+    </div>
+
+    <script src="sheets-integration.js"></script>
+    <script>
+        // Initialize the sheets integration
+        const sheetsAPI = new SheetsIntegration();
+
+        // Update status display
+        function updateStatus() {
+            const status = sheetsAPI.getStatus();
+            
+            document.getElementById('loadingStatus').textContent = 
+                status.isLoading ? '⏳ Loading...' : 
+                status.isCached ? '✅ Loaded (cached)' : '⏸️ Ready to load';
+            
+            document.getElementById('cacheStatus').textContent = 
+                status.lastUpdated ? `Cache: Updated ${status.lastUpdated}` : 'Cache: Empty';
+            
+            if (status.error) {
+                document.getElementById('errorStatus').innerHTML = 
+                    `<div class="error">❌ Error: ${status.error}</div>`;
+            } else {
+                document.getElementById('errorStatus').textContent = '';
+            }
+        }
+
+        // Load all sheets
+        async function loadSheets() {
+            const resultsDiv = document.getElementById('resultsContainer');
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading sheets...</p></div>';
+            
+            try {
+                updateStatus();
+                const data = await sheetsAPI.loadAllSheets();
+                
+                resultsDiv.innerHTML = `
+                    <div class="success">
+                        <h3>✅ Successfully Loaded!</h3>
+                        <p>Questions: ${data.questions.all.length}</p>
+                        <p>Rubrics: ${Object.keys(data.rubrics).length} questions with rubrics</p>
+                        <p>Progress Records: ${data.progress.all.length}</p>
+                    </div>
+                `;
+                
+                updateStatus();
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Failed to Load Sheets</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <h4>Troubleshooting:</h4>
+                        <ol>
+                            <li>Make sure your sheet is published to web as CSV</li>
+                            <li>Check that the GID numbers match your sheet tabs</li>
+                            <li>Verify the sheet has correct column headers</li>
+                            <li>Check browser console for detailed errors</li>
+                        </ol>
+                    </div>
+                `;
+                updateStatus();
+            }
+        }
+
+        // Test loading questions
+        async function testQuestions() {
+            const resultsDiv = document.getElementById('resultsContainer');
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading questions...</p></div>';
+            
+            try {
+                const questions = await sheetsAPI.getQuestions(10, 'science', 1);
+                
+                if (questions.length === 0) {
+                    resultsDiv.innerHTML = `
+                        <div class="info-box">
+                            <h3>⚠️ No Questions Found</h3>
+                            <p>No questions found for Grade 10, Science, Lesson 1.</p>
+                            <p>Please check your Questions sheet has data with these filters.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '<div class="data-section"><h2>📝 Questions (Grade 10, Science, Lesson 1)</h2>';
+                
+                questions.forEach((q, index) => {
+                    html += `
+                        <div class="question-card">
+                            <h3>Question ${index + 1}</h3>
+                            <p><strong>Type:</strong> ${q.type}</p>
+                            <p><strong>Question:</strong> ${q.question}</p>
+                            <div class="answer-level">
+                                <strong>Basic:</strong> ${q.answers.basic.substring(0, 150)}...
+                            </div>
+                            <div class="answer-level">
+                                <strong>Expert:</strong> ${q.answers.expert.substring(0, 150)}...
+                            </div>
+                            <p><strong>Keywords:</strong> ${q.keywords.join(', ')}</p>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Test loading rubrics
+        async function testRubrics() {
+            const resultsDiv = document.getElementById('resultsContainer');
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading rubrics...</p></div>';
+            
+            try {
+                const data = await sheetsAPI.loadAllSheets();
+                
+                if (Object.keys(data.rubrics).length === 0) {
+                    resultsDiv.innerHTML = `
+                        <div class="info-box">
+                            <h3>⚠️ No Rubrics Found</h3>
+                            <p>No rubrics found in your Rubrics sheet.</p>
+                            <p>Please add rubric data to Sheet 2.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '<div class="data-section"><h2>🎯 Evaluation Rubrics</h2>';
+                
+                Object.entries(data.rubrics).forEach(([questionId, rubrics]) => {
+                    html += `
+                        <div class="question-card">
+                            <h3>Question ID: ${questionId}</h3>
+                    `;
+                    
+                    rubrics.forEach((rubric, index) => {
+                        html += `
+                            <div class="answer-level">
+                                <strong>Concept ${index + 1}:</strong> ${rubric.concept}<br>
+                                <strong>Max Points:</strong> ${rubric.maxPoints}<br>
+                                <strong>Keywords:</strong> ${rubric.keywords.join(', ')}<br>
+                                <strong>Description:</strong> ${rubric.description}
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                });
+                
+                html += '</div>';
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Clear cache
+        function clearCache() {
+            sheetsAPI.clearCache();
+            updateStatus();
+            document.getElementById('resultsContainer').innerHTML = 
+                '<div class="success">🗑️ Cache cleared! Click "Load All Sheets" to refresh data.</div>';
+        }
+
+        // Initialize
+        updateStatus();
+    </script>
+</body>
+</html>
