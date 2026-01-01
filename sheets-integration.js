@@ -44,6 +44,16 @@ class SheetsIntegration {
     }
 
     /**
+     * Normalize question ID to handle both "1" and "00001" formats
+     */
+    normalizeQuestionId(id) {
+        if (!id) return '';
+        // Convert to string and pad with zeros to 5 digits
+        const numericId = parseInt(id.toString().replace(/^0+/, '')) || 0;
+        return numericId.toString().padStart(5, '0');
+    }
+
+    /**
      * Parse CSV text into array of objects
      */
     parseCSV(csvText) {
@@ -65,6 +75,11 @@ class SheetsIntegration {
                     row[header] = values[index].trim().replace(/^"|"$/g, '');
                 });
                 data.push(row);
+                
+                // Log first row for debugging
+                if (i === 1) {
+                    console.log('📝 First data row:', row);
+                }
             }
         }
         
@@ -142,9 +157,6 @@ class SheetsIntegration {
             
             const parsed = this.parseCSV(csvText);
             console.log(`✅ ${sheetKey}: Loaded ${parsed.length} rows`);
-            if (parsed.length > 0) {
-                console.log(`📝 ${sheetKey} sample row:`, parsed[0]);
-            }
             return parsed;
             
         } catch (error) {
@@ -233,8 +245,11 @@ class SheetsIntegration {
         };
 
         data.forEach(row => {
+            const rawId = this.getValue(row, 'global_question_id', 'globalQuestionId', 'Global Question ID');
+            const normalizedId = this.normalizeQuestionId(rawId);
+            
             const question = {
-                globalQuestionId: this.getValue(row, 'global_question_id', 'globalQuestionId', 'Global Question ID'),
+                globalQuestionId: normalizedId,
                 questionCode: this.getValue(row, 'question_code', 'questionCode', 'Question Code'),
                 board: (this.getValue(row, 'board', 'Board') || 'tn').toLowerCase(),
                 medium: (this.getValue(row, 'medium', 'Medium') || 'english').toLowerCase(),
@@ -247,7 +262,7 @@ class SheetsIntegration {
             };
 
             // Index by global question ID
-            questions.byId[question.globalQuestionId] = question;
+            questions.byId[normalizedId] = question;
 
             // Index by grade
             if (!questions.byGrade[question.grade]) {
@@ -271,6 +286,7 @@ class SheetsIntegration {
             questions.all.push(question);
         });
 
+        console.log('📝 Sample normalized question ID:', questions.all[0]?.globalQuestionId);
         return questions;
     }
 
@@ -307,10 +323,11 @@ class SheetsIntegration {
         };
 
         data.forEach(row => {
-            const globalQuestionId = this.getValue(row, 'global_question_id', 'globalQuestionId', 'Global Question ID');
+            const rawId = this.getValue(row, 'global_question_id', 'globalQuestionId', 'Global Question ID');
+            const normalizedId = this.normalizeQuestionId(rawId);
             
             const answer = {
-                globalQuestionId: globalQuestionId,
+                globalQuestionId: normalizedId,
                 levels: {
                     basic: this.getValue(row, 'level_basic', 'levelBasic', 'Level Basic', 'Basic'),
                     elementary: this.getValue(row, 'level_elementary', 'levelElementary', 'Level Elementary', 'Elementary'),
@@ -320,13 +337,17 @@ class SheetsIntegration {
                 }
             };
 
-            console.log(`🔍 Answer for ${globalQuestionId}:`, answer.levels);
+            console.log(`🔍 Answer for ${normalizedId} (raw: ${rawId}):`, {
+                hasBasic: !!answer.levels.basic,
+                basicLength: answer.levels.basic?.length || 0
+            });
 
-            answers.byId[globalQuestionId] = answer;
+            answers.byId[normalizedId] = answer;
             answers.all.push(answer);
         });
 
         console.log('📚 Total answers indexed:', Object.keys(answers.byId).length);
+        console.log('📝 Sample answer IDs:', Object.keys(answers.byId).slice(0, 3));
 
         return answers;
     }
@@ -353,8 +374,11 @@ class SheetsIntegration {
             if (!answer) {
                 console.warn(`⚠️ No answer found for question: ${question.globalQuestionId}`);
                 unmatchedQuestions.push(question.globalQuestionId);
-            } else {
+            } else if (answer.levels.basic && answer.levels.basic.trim()) {
                 matchedAnswers++;
+                console.log(`✅ Matched answer for ${question.globalQuestionId}`);
+            } else {
+                console.warn(`⚠️ Empty answer for question: ${question.globalQuestionId}`);
             }
 
             const mergedItem = {
@@ -403,7 +427,7 @@ class SheetsIntegration {
             merged.all.push(mergedItem);
         });
 
-        console.log(`✅ Merged ${matchedAnswers} questions with answers`);
+        console.log(`✅ Merged ${matchedAnswers} questions with non-empty answers`);
         if (unmatchedQuestions.length > 0) {
             console.warn(`⚠️ ${unmatchedQuestions.length} questions without answers:`, unmatchedQuestions);
         }
@@ -443,9 +467,10 @@ class SheetsIntegration {
         try {
             const data = await this.loadAllSheets();
             
-            // Try by ID first
-            if (data.merged.byId[questionIdOrText]) {
-                return data.merged.byId[questionIdOrText];
+            // Try by normalized ID first
+            const normalizedId = this.normalizeQuestionId(questionIdOrText);
+            if (data.merged.byId[normalizedId]) {
+                return data.merged.byId[normalizedId];
             }
             
             // Then search by text
