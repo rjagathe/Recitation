@@ -1,325 +1,327 @@
-# Google Sheets Setup Guide
+# 📚 Google Sheets Setup Guide
 
-## 📊 Your Current Sheet Structure
+## Your Google Sheet
 
 **Sheet ID:** `19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo`
 
-### Your 3 Sheets:
-
-1. **Questions** - All question metadata
-2. **Lesson** - Lesson information
-3. **Master Answer** - Answers at different difficulty levels
+**Direct Link:** [Open your Google Sheet](https://docs.google.com/spreadsheets/d/19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo/edit)
 
 ---
 
-## 🚀 Quick Setup (3 Steps)
+## 🔑 Step 1: Make Your Sheet Accessible
 
-### Step 1: Make Your Sheet Public
+Since the "Publish to web" option isn't available, we'll use the public sharing method:
 
-1. Open your Google Sheet: https://docs.google.com/spreadsheets/d/19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo/edit
+### Option A: Using Share Settings (Recommended)
 
-2. Click the **Share** button (top right corner)
+1. **Open your Google Sheet** (link above)
 
-3. Click **"Change to anyone with the link"**
+2. **Click the Share button** (top right corner)
 
-4. Set permission to **"Viewer"**
+3. **Change access level:**
+   - Click "Change to anyone with the link"
+   - Set permission to **"Viewer"**
+   - Click **"Done"**
 
-5. Click **"Done"**
+4. **Verify it works:**
+   - Open this URL in a new browser tab (replace with your actual GIDs if needed):
+   ```
+   https://docs.google.com/spreadsheets/d/19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo/export?format=csv&gid=0
+   ```
+   - You should see CSV data download or display
 
-### Step 2: Find Your Sheet GIDs
+### Option B: If "Publish to web" is available
 
-1. Click on each sheet tab at the bottom
-2. Look at the URL in your browser
-3. Find the `gid=` number
-
-**Example URL:**
-```
-https://docs.google.com/spreadsheets/d/19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo/edit#gid=0
-                                                                                              ^
-                                                                                           This is the GID
-```
-
-**Your GIDs:**
-- Questions sheet: `gid=______` (write it down)
-- Lesson sheet: `gid=______` (write it down)
-- Master Answer sheet: `gid=______` (write it down)
-
-### Step 3: Update GIDs in Code (if needed)
-
-If your GIDs are NOT 0, 1, 2, update `sheets-integration.js`:
-
-```javascript
-this.SHEET_GIDS = {
-    questions: '0',     // Replace with your Questions sheet GID
-    lessons: '1234',    // Replace with your Lesson sheet GID
-    answers: '5678'     // Replace with your Master Answer sheet GID
-};
-```
+1. Click **File** → **Share** → **Publish to web**
+2. Select each sheet tab and publish as CSV
+3. Click Publish
 
 ---
 
-## 📝 Your Sheet Structures
+## 📋 Step 2: Verify Your Sheet Structure
 
 ### Sheet 1: Questions
 
-**Required Columns:**
+Your sheet should have these columns (exact header names):
+
 ```
 global_question_id | question_code | board | medium | grade | subject | lesson_no | question_no | question_text | lesson_id
 ```
 
-**Example Data:**
+**Example data:**
 ```csv
 global_question_id,question_code,board,medium,grade,subject,lesson_no,question_no,question_text,lesson_id
-Q001,TN10SCI01,tn,english,10,science,1,1,"Define inertia. Give its classification.",L001
-Q002,TN10SCI01,tn,english,10,science,1,2,"State Newton's first law of motion.",L001
+q_science_10_1_1,SCI-10-1-1,tn,english,10,science,1,1,"What is inertia?",lesson_sci_10_1
+q_science_10_1_2,SCI-10-1-2,tn,english,10,science,1,2,"State Newton's first law",lesson_sci_10_1
 ```
 
-**Field Descriptions:**
-- `global_question_id`: Unique ID (e.g., Q001, Q002)
-- `question_code`: Course/board code
-- `board`: Board name (tn, cbse)
-- `medium`: Language medium (english, tamil)
-- `grade`: Grade level (6-12)
-- `subject`: Subject name (science, social, tamil, english)
-- `lesson_no`: Lesson number (1, 2, 3...)
-- `question_no`: Question number within lesson
-- `question_text`: The actual question
-- `lesson_id`: References Lesson sheet
+**Important Notes:**
+- `global_question_id`: Unique identifier for each question
+- `grade`: Must be a number (6, 7, 8, 9, 10, 11, 12)
+- `subject`: Lowercase (science, social, tamil, english, maths)
+- `board`: Board name (tn, cbse, icse)
+- `medium`: Language (english, tamil)
+- `lesson_id`: Links to the Lessons sheet
 
-### Sheet 2: Lesson
+---
 
-**Required Columns:**
+### Sheet 2: Lessons
+
+Your sheet should have these columns:
+
 ```
 lesson_id | lesson_name | lesson_doc_id
 ```
 
-**Example Data:**
+**Example data:**
 ```csv
 lesson_id,lesson_name,lesson_doc_id
-L001,Laws of Motion,DOC001
-L002,Gravitation,DOC002
+lesson_sci_10_1,"Laws of Motion",doc_123456
+lesson_sci_10_2,"Gravitation",doc_123457
 ```
 
-**Field Descriptions:**
-- `lesson_id`: Unique lesson ID (L001, L002)
-- `lesson_name`: Display name of lesson
+**Important Notes:**
+- `lesson_id`: Must match the `lesson_id` in Questions sheet
+- `lesson_name`: Display name of the lesson
 - `lesson_doc_id`: Optional document reference
+
+---
 
 ### Sheet 3: Master Answer
 
-**Required Columns:**
+Your sheet should have these columns:
+
 ```
 global_question_id | level_basic | level_elementary | level_intermediate | level_advanced | level_prodigy
 ```
 
-**Example Data:**
+**Example data:**
 ```csv
 global_question_id,level_basic,level_elementary,level_intermediate,level_advanced,level_prodigy
-Q001,"Inertia is resistance to change in motion.","Inertia is the property of matter...","Inertia quantifies...","Inertia, as defined by...","From a relativistic perspective..."
+q_science_10_1_1,"Inertia is the property of matter","Inertia is the tendency of objects to resist changes in their state of motion","Inertia is a fundamental property where objects maintain their state of rest or uniform motion unless acted upon by external force","Inertia is the inherent property of matter quantified by mass, where greater mass indicates greater resistance to changes in velocity as described by Newton's First Law","Inertia represents the fundamental principle of conservation of momentum in the absence of external forces, mathematically expressed as F=ma, where the acceleration is inversely proportional to mass, demonstrating the relationship between force, mass, and motion in classical mechanics"
 ```
 
-**Field Descriptions:**
-- `global_question_id`: Matches Questions sheet
-- `level_basic`: Simple, 1-2 sentence answer
-- `level_elementary`: Detailed explanation with examples
-- `level_intermediate`: Technical explanation with formulas
-- `level_advanced`: In-depth with derivations
-- `level_prodigy`: Expert-level with advanced concepts
+**Important Notes:**
+- `global_question_id`: Must match the `global_question_id` in Questions sheet
+- Answer levels progress from simple to complex:
+  - **basic**: Short, simple answer (1-2 sentences)
+  - **elementary**: Moderate detail (2-3 sentences)
+  - **intermediate**: Good understanding (3-4 sentences)
+  - **advanced**: Deep understanding (4-5 sentences)
+  - **prodigy**: Expert level with technical details (5+ sentences)
 
 ---
 
-## 💻 Testing Your Integration
+## 🔍 Step 3: Find Your Sheet GIDs
 
-### Test URL Format
+Each sheet tab has a unique GID number that we need:
 
-Your sheets will be accessible via these URLs:
+1. **Click on the "Questions" tab** (Sheet 1)
+   - Look at the URL: `...#gid=XXXXXXXX`
+   - Copy the number after `gid=`
+   - This is likely `0` for the first sheet
 
-```
-Questions:
-https://docs.google.com/spreadsheets/d/19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo/export?format=csv&gid=0
+2. **Click on the "Lessons" tab** (Sheet 2)
+   - Note the GID number
+   - This is likely `1` or a different number
 
-Lesson:
-https://docs.google.com/spreadsheets/d/19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo/export?format=csv&gid=1
+3. **Click on the "Master Answer" tab** (Sheet 3)
+   - Note the GID number
+   - This is likely `2` or a different number
 
-Master Answer:
-https://docs.google.com/spreadsheets/d/19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo/export?format=csv&gid=2
-```
-
-### Test in Browser
-
-1. Copy any URL above
-2. Paste in browser address bar
-3. You should see CSV data download or display
-4. If you get an error, check that sheet is public
-
-### Test with Demo Page
-
-Open `sheets-demo.html` and click "Load All Sheets"
+4. **Update `sheets-integration.js` if needed:**
+   ```javascript
+   this.SHEET_GIDS = {
+       questions: '0',        // Replace with your Questions GID
+       lessons: '1234567',    // Replace with your Lessons GID
+       answers: '7654321'     // Replace with your Master Answer GID
+   };
+   ```
 
 ---
 
-## 🔧 Using in Your App
+## ✅ Step 4: Test the Integration
 
-### Initialize
+1. **Open the demo page:**
+   - If hosted: Open `sheets-demo.html` in your browser
+   - Or create a simple HTML file with:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Sheets Integration</title>
+</head>
+<body>
+    <h1>Testing Google Sheets Integration</h1>
+    <button onclick="testLoad()">Load Data</button>
+    <div id="result"></div>
+
+    <script src="sheets-integration.js"></script>
+    <script>
+        const sheetsAPI = new SheetsIntegration();
+
+        async function testLoad() {
+            try {
+                console.log('Loading sheets...');
+                const data = await sheetsAPI.loadAllSheets();
+                
+                document.getElementById('result').innerHTML = `
+                    <h2>✅ Success!</h2>
+                    <p>Questions: ${data.merged.all.length}</p>
+                    <p>Lessons: ${data.lessons.all.length}</p>
+                    <p>Answers: ${data.answers.all.length}</p>
+                `;
+                
+                console.log('Sample question:', data.merged.all[0]);
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <h2>❌ Error</h2>
+                    <p>${error.message}</p>
+                `;
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
+```
+
+2. **Click "Load Data" button**
+
+3. **Check browser console** (F12) for detailed logs
+
+---
+
+## 🛠️ Common Issues & Solutions
+
+### Issue 1: "Failed to fetch" error
+
+**Solution:**
+- Make sure sheet is shared as "Anyone with the link can view"
+- Check that GID numbers are correct
+- Try opening the CSV URL directly in browser
+
+### Issue 2: "Empty response received"
+
+**Solution:**
+- Verify your sheets have data
+- Check column headers match exactly (case-sensitive)
+- Make sure there are no empty sheets
+
+### Issue 3: CORS errors
+
+**Solution:**
+- Must use the `/export?format=csv` URL format
+- Sheet must be publicly accessible
+- Try in different browser (Chrome/Firefox)
+
+### Issue 4: Data not loading
+
+**Solution:**
+- Open browser console (F12) and check for errors
+- Verify GID numbers are correct
+- Test CSV URL directly: `https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/export?format=csv&gid=0`
+
+### Issue 5: Questions don't have answers
+
+**Solution:**
+- Make sure `global_question_id` matches exactly between Questions and Master Answer sheets
+- Check for typos or extra spaces
+- IDs are case-sensitive
+
+---
+
+## 💻 Using in Your App
+
+### Basic Usage
+
 ```javascript
-// Include in your HTML
-<script src="sheets-integration.js"></script>
-
-// Create instance
+// Initialize
 const sheetsAPI = new SheetsIntegration();
-```
 
-### Load Questions
-```javascript
+// Load all data
+const data = await sheetsAPI.loadAllSheets();
+
 // Get questions for Grade 10, Science, Lesson 1
 const questions = await sheetsAPI.getQuestions(10, 'science', 1);
 
-console.log('Questions:', questions);
-// Each question has: globalQuestionId, questionText, lessonName, answers{}
+// Get a specific question with all its answers
+const question = await sheetsAPI.getQuestion('q_science_10_1_1');
+console.log(question.questionText);
+console.log(question.answers.basic);
+console.log(question.answers.prodigy);
+
+// Get specific answer level
+const answer = await sheetsAPI.getAnswer('q_science_10_1_1', 'advanced');
+
+// Get lesson info
+const lesson = await sheetsAPI.getLesson('lesson_sci_10_1');
+console.log(lesson.lessonName);
 ```
 
-### Get Specific Question
+### Advanced Usage
+
 ```javascript
-// By ID
-const q = await sheetsAPI.getQuestion('Q001');
+// Get all questions for a grade
+const grade10Questions = await sheetsAPI.getQuestions(10);
 
-// By text
-const q = await sheetsAPI.getQuestion('Define inertia');
+// Get all science questions
+const scienceQuestions = await sheetsAPI.getQuestions(null, 'science');
 
-console.log('Question:', q.questionText);
-console.log('Lesson:', q.lessonName);
-```
-
-### Get Answers
-```javascript
-// Get answer at specific level
-const basicAnswer = await sheetsAPI.getAnswer('Q001', 'basic');
-const prodigyAnswer = await sheetsAPI.getAnswer('Q001', 'prodigy');
-
-// Question object already has answers merged
-const q = await sheetsAPI.getQuestion('Q001');
-console.log(q.answers.basic);        // Basic level
-console.log(q.answers.elementary);   // Elementary level
-console.log(q.answers.intermediate); // Intermediate level
-console.log(q.answers.advanced);     // Advanced level
-console.log(q.answers.prodigy);      // Prodigy level
-```
-
-### Get Lessons
-```javascript
 // Get all lessons
-const lessons = await sheetsAPI.getAllLessons();
+const allLessons = await sheetsAPI.getAllLessons();
 
-// Get specific lesson
-const lesson = await sheetsAPI.getLesson('L001');
-console.log(lesson.lessonName); // "Laws of Motion"
+// Check cache status
+const status = sheetsAPI.getStatus();
+console.log('Cached:', status.isCached);
+console.log('Last updated:', status.lastUpdated);
+
+// Clear cache to force refresh
+sheetsAPI.clearCache();
 ```
-
----
-
-## ✨ Features
-
-### 🔄 Automatic Merging
-The integration automatically merges:
-- Questions + Answers (by global_question_id)
-- Questions + Lesson info (by lesson_id)
-
-So you get complete question objects with everything!
-
-### 📦 Smart Caching
-- Data cached for 5 minutes
-- Reduces API calls
-- Fast subsequent loads
-
-### 🔍 Multiple Indexes
-- By grade
-- By subject  
-- By lesson
-- By question ID
-
-### 🛡️ Error Handling
-- Connection errors caught
-- Detailed error messages
-- Graceful fallbacks
-
----
-
-## ⚠️ Troubleshooting
-
-### Error: "Failed to fetch"
-**Cause:** Sheet is not public
-
-**Solution:**
-1. Click Share button
-2. Change to "Anyone with the link"
-3. Set to "Viewer"
-
-### Error: "Empty response"
-**Cause:** Wrong GID or sheet is empty
-
-**Solution:**
-1. Verify GID numbers match your sheet tabs
-2. Check that sheets have data
-3. Ensure column headers match exactly
-
-### Questions not loading
-**Cause:** Column names don't match
-
-**Solution:**
-Ensure exact column names (case-sensitive):
-- Questions: `global_question_id`, `question_code`, `board`, `medium`, `grade`, `subject`, `lesson_no`, `question_no`, `question_text`, `lesson_id`
-- Lesson: `lesson_id`, `lesson_name`, `lesson_doc_id`
-- Master Answer: `global_question_id`, `level_basic`, `level_elementary`, `level_intermediate`, `level_advanced`, `level_prodigy`
-
-### CORS errors in browser
-**Cause:** Sheet not published or wrong URL format
-
-**Solution:**
-1. Make sheet public (Share → Anyone with link)
-2. Use CSV export URL format
-3. Try in different browser (Chrome/Firefox)
 
 ---
 
 ## 🔒 Security Notes
 
-- ✅ **Read-only access** - Integration only reads data
-- ⚠️ **Public data** - Anyone with link can view
-- 🚫 **No sensitive info** - Don't put passwords, personal data
-- 🔑 **No authentication** - No API keys needed
+- ✅ **Read-only access**: The integration only reads data
+- ⚠️ **Public data**: Anyone with the link can access your sheet
+- ❌ **Don't store**: Passwords, personal info, or sensitive data
+- ✅ **Safe for**: Questions, answers, lesson content
 
 ---
 
-## 📈 Next Steps
+## 📊 Data Flow
 
-### Optional: Add More Sheets
-
-You can add these sheets later:
-
-**Rubrics** (for detailed evaluation):
-```csv
-question_id,concept,description,max_points,keywords,importance
 ```
-
-**Student Progress** (to track attempts):
-```csv
-student_id,question_id,attempt,score,timestamp,response
-```
-
-### Update index.html
-
-Modify your `index.html` to use real data from sheets instead of hardcoded questions:
-
-```javascript
-// Replace hardcoded questions with:
-async function loadQuestions() {
-    const questions = await sheetsAPI.getQuestions(10, 'science', 1);
-    displayQuestions(questions);
-}
+Google Sheets
+    ↓
+    ├── Questions Sheet → Parsed → Indexed by grade/subject/lesson
+    ├── Lessons Sheet → Parsed → Indexed by lesson_id
+    └── Master Answer Sheet → Parsed → Indexed by global_question_id
+                ↓
+        Merged Data (Questions + Answers + Lesson Info)
+                ↓
+            Cached for 5 minutes
+                ↓
+          Your App Uses It!
 ```
 
 ---
 
-**Ready to test?** Open `sheets-demo.html` to verify everything works!
+## 🎯 Next Steps
 
-**Need help?** Check browser console (F12) for detailed error messages.
+1. ✅ Set up public sharing on your Google Sheet
+2. ✅ Verify GID numbers and update if needed
+3. ✅ Test with the demo HTML file
+4. ✅ Start using in your Recitation App!
+
+---
+
+**Need Help?**
+- Check browser console for detailed error messages
+- Verify your sheet structure matches this guide
+- Test CSV export URLs directly in browser
+
+**Last Updated:** January 2026
