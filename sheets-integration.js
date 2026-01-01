@@ -1,17 +1,31 @@
 /**
  * Google Sheets Integration Module for Acharya108 Recitation App
  * Integrates with Google Sheets: 19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo
+ * 
+ * IMPORTANT: To use this integration, you must publish your Google Sheets:
+ * 1. Open your Google Sheet
+ * 2. File → Share → Publish to web
+ * 3. Select each sheet and publish as CSV
+ * 4. Update the gid values below if needed
  */
 
 class SheetsIntegration {
     constructor() {
         this.SHEET_ID = '19m22llWuLAfL1zSjBzzCZnHbBelHHCtW62zH4tP9MWo';
         
-        // Published CSV URLs for each sheet (update these after publishing)
+        // GID values for each sheet (update these based on your actual sheet GIDs)
+        // To find GID: Open sheet tab, look at URL: /edit#gid=XXXXXXXX
+        this.SHEET_GIDS = {
+            questions: '0',        // First sheet (Questions)
+            rubrics: '1',          // Second sheet (Rubrics)
+            progress: '2'          // Third sheet (Student Progress)
+        };
+        
+        // Published CSV URLs for each sheet
         this.SHEET_URLS = {
-            sheet1: `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/export?format=csv&gid=0`,
-            sheet2: `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/export?format=csv&gid=1`,
-            sheet3: `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/export?format=csv&gid=2`
+            questions: `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/export?format=csv&gid=${this.SHEET_GIDS.questions}`,
+            rubrics: `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/export?format=csv&gid=${this.SHEET_GIDS.rubrics}`,
+            progress: `https://docs.google.com/spreadsheets/d/${this.SHEET_ID}/export?format=csv&gid=${this.SHEET_GIDS.progress}`
         };
         
         // Cache for loaded data
@@ -24,6 +38,10 @@ class SheetsIntegration {
         
         // Cache duration in milliseconds (5 minutes)
         this.CACHE_DURATION = 5 * 60 * 1000;
+        
+        // Status tracking
+        this.isLoading = false;
+        this.loadError = null;
     }
 
     /**
@@ -86,19 +104,36 @@ class SheetsIntegration {
     }
 
     /**
-     * Fetch data from Google Sheets
+     * Fetch data from Google Sheets with CORS handling
      */
     async fetchSheet(sheetKey) {
         try {
-            const response = await fetch(this.SHEET_URLS[sheetKey]);
+            const url = this.SHEET_URLS[sheetKey];
+            console.log(`📥 Fetching ${sheetKey} from:`, url);
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-cache'
+            });
+            
             if (!response.ok) {
-                throw new Error(`Failed to fetch ${sheetKey}: ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
+            
             const csvText = await response.text();
-            return this.parseCSV(csvText);
+            
+            if (!csvText || csvText.trim().length === 0) {
+                throw new Error('Empty response received');
+            }
+            
+            const parsed = this.parseCSV(csvText);
+            console.log(`✅ ${sheetKey}: Loaded ${parsed.length} rows`);
+            return parsed;
+            
         } catch (error) {
-            console.error(`Error fetching ${sheetKey}:`, error);
-            throw error;
+            console.error(`❌ Error fetching ${sheetKey}:`, error);
+            throw new Error(`Failed to load ${sheetKey}: ${error.message}`);
         }
     }
 
@@ -107,63 +142,90 @@ class SheetsIntegration {
      */
     async loadAllSheets() {
         if (this.isCacheValid()) {
-            console.log('Using cached data');
+            console.log('✨ Using cached data');
             return this.cache;
         }
 
+        if (this.isLoading) {
+            console.log('⏳ Already loading...');
+            await new Promise(resolve => {
+                const checkLoading = setInterval(() => {
+                    if (!this.isLoading) {
+                        clearInterval(checkLoading);
+                        resolve();
+                    }
+                }, 100);
+            });
+            return this.cache;
+        }
+
+        this.isLoading = true;
+        this.loadError = null;
+
         try {
-            console.log('Loading data from Google Sheets...');
+            console.log('🔄 Loading data from Google Sheets...');
             
-            const [sheet1Data, sheet2Data, sheet3Data] = await Promise.all([
-                this.fetchSheet('sheet1'),
-                this.fetchSheet('sheet2'),
-                this.fetchSheet('sheet3')
+            const [questionsData, rubricsData, progressData] = await Promise.all([
+                this.fetchSheet('questions'),
+                this.fetchSheet('rubrics'),
+                this.fetchSheet('progress')
             ]);
 
             // Process data based on your sheet structure
             this.cache = {
-                questions: this.processQuestionsSheet(sheet1Data),
-                rubrics: this.processRubricsSheet(sheet2Data),
-                progress: this.processProgressSheet(sheet3Data),
+                questions: this.processQuestionsSheet(questionsData),
+                rubrics: this.processRubricsSheet(rubricsData),
+                progress: this.processProgressSheet(progressData),
                 lastUpdated: Date.now()
             };
 
-            console.log('✅ Sheets loaded successfully');
+            console.log('✅ All sheets loaded successfully!');
+            console.log('📊 Summary:', {
+                questions: this.cache.questions.all.length,
+                rubrics: Object.keys(this.cache.rubrics).length,
+                progress: this.cache.progress.all.length
+            });
+            
             return this.cache;
+            
         } catch (error) {
             console.error('❌ Failed to load sheets:', error);
+            this.loadError = error.message;
             throw error;
+        } finally {
+            this.isLoading = false;
         }
     }
 
     /**
      * Process questions sheet data
-     * Expected columns: Grade, Subject, Lesson, Type, Question, BasicAnswer, ElementaryAnswer, 
-     * IntermediateAnswer, AdvancedAnswer, ExpertAnswer, Keywords
+     * Expected columns: ID, Grade, Subject, Lesson, Type, Question, BasicAnswer, 
+     * ElementaryAnswer, IntermediateAnswer, AdvancedAnswer, ExpertAnswer, Keywords
      */
     processQuestionsSheet(data) {
         const questions = {
             byGrade: {},
             bySubject: {},
+            byLesson: {},
             all: []
         };
 
-        data.forEach(row => {
+        data.forEach((row, index) => {
             const question = {
-                id: row.ID || `q_${Date.now()}_${Math.random()}`,
-                grade: parseInt(row.Grade) || 10,
-                subject: row.Subject || 'science',
-                lesson: parseInt(row.Lesson) || 1,
-                type: row.Type || 'brief',
-                question: row.Question || '',
+                id: row.ID || row.id || `q_${index}`,
+                grade: parseInt(row.Grade || row.grade) || 10,
+                subject: (row.Subject || row.subject || 'science').toLowerCase(),
+                lesson: parseInt(row.Lesson || row.lesson) || 1,
+                type: (row.Type || row.type || 'brief').toLowerCase(),
+                question: row.Question || row.question || '',
                 answers: {
-                    basic: row.BasicAnswer || '',
-                    elementary: row.ElementaryAnswer || '',
-                    intermediate: row.IntermediateAnswer || '',
-                    advanced: row.AdvancedAnswer || '',
-                    expert: row.ExpertAnswer || ''
+                    basic: row.BasicAnswer || row.basicAnswer || '',
+                    elementary: row.ElementaryAnswer || row.elementaryAnswer || '',
+                    intermediate: row.IntermediateAnswer || row.intermediateAnswer || '',
+                    advanced: row.AdvancedAnswer || row.advancedAnswer || '',
+                    expert: row.ExpertAnswer || row.expertAnswer || ''
                 },
-                keywords: (row.Keywords || '').split(',').map(k => k.trim()).filter(k => k)
+                keywords: (row.Keywords || row.keywords || '').split(',').map(k => k.trim()).filter(k => k)
             };
 
             // Index by grade
@@ -177,6 +239,13 @@ class SheetsIntegration {
                 questions.bySubject[question.subject] = [];
             }
             questions.bySubject[question.subject].push(question);
+
+            // Index by lesson
+            const lessonKey = `${question.grade}_${question.subject}_${question.lesson}`;
+            if (!questions.byLesson[lessonKey]) {
+                questions.byLesson[lessonKey] = [];
+            }
+            questions.byLesson[lessonKey].push(question);
 
             questions.all.push(question);
         });
@@ -192,18 +261,20 @@ class SheetsIntegration {
         const rubrics = {};
 
         data.forEach(row => {
-            const questionId = row.QuestionID || row.Question;
+            const questionId = row.QuestionID || row.questionId || row.Question || row.question;
+            
+            if (!questionId) return;
             
             if (!rubrics[questionId]) {
                 rubrics[questionId] = [];
             }
 
             rubrics[questionId].push({
-                concept: row.Concept || '',
-                description: row.Description || '',
-                maxPoints: parseFloat(row.MaxPoints) || 10,
-                keywords: (row.Keywords || '').split(',').map(k => k.trim()).filter(k => k),
-                importance: row.Importance || 'medium'
+                concept: row.Concept || row.concept || '',
+                description: row.Description || row.description || '',
+                maxPoints: parseFloat(row.MaxPoints || row.maxPoints) || 10,
+                keywords: (row.Keywords || row.keywords || '').split(',').map(k => k.trim()).filter(k => k),
+                importance: (row.Importance || row.importance || 'medium').toLowerCase()
             });
         });
 
@@ -217,23 +288,32 @@ class SheetsIntegration {
     processProgressSheet(data) {
         const progress = {
             byStudent: {},
+            byQuestion: {},
             all: []
         };
 
         data.forEach(row => {
             const record = {
-                studentId: row.StudentID || 'anonymous',
-                questionId: row.QuestionID || '',
-                attempt: parseInt(row.Attempt) || 1,
-                score: parseFloat(row.Score) || 0,
-                timestamp: row.Timestamp || new Date().toISOString(),
-                response: row.Response || ''
+                studentId: row.StudentID || row.studentId || 'anonymous',
+                questionId: row.QuestionID || row.questionId || '',
+                attempt: parseInt(row.Attempt || row.attempt) || 1,
+                score: parseFloat(row.Score || row.score) || 0,
+                timestamp: row.Timestamp || row.timestamp || new Date().toISOString(),
+                response: row.Response || row.response || ''
             };
 
+            // Index by student
             if (!progress.byStudent[record.studentId]) {
                 progress.byStudent[record.studentId] = [];
             }
             progress.byStudent[record.studentId].push(record);
+            
+            // Index by question
+            if (!progress.byQuestion[record.questionId]) {
+                progress.byQuestion[record.questionId] = [];
+            }
+            progress.byQuestion[record.questionId].push(record);
+
             progress.all.push(record);
         });
 
@@ -241,86 +321,91 @@ class SheetsIntegration {
     }
 
     /**
-     * Get questions for specific grade and subject
+     * Get questions for specific grade, subject, and lesson
      */
     async getQuestions(grade, subject, lesson = null) {
-        const data = await this.loadAllSheets();
-        let questions = data.questions.byGrade[grade] || [];
-        
-        if (subject) {
-            questions = questions.filter(q => q.subject === subject);
+        try {
+            const data = await this.loadAllSheets();
+            
+            if (lesson !== null) {
+                const lessonKey = `${grade}_${subject}_${lesson}`;
+                return data.questions.byLesson[lessonKey] || [];
+            }
+            
+            let questions = data.questions.byGrade[grade] || [];
+            
+            if (subject) {
+                questions = questions.filter(q => q.subject === subject);
+            }
+            
+            return questions;
+        } catch (error) {
+            console.error('Error getting questions:', error);
+            return [];
         }
-        
-        if (lesson !== null) {
-            questions = questions.filter(q => q.lesson === lesson);
-        }
-        
-        return questions;
     }
 
     /**
      * Get a specific question by ID or text
      */
     async getQuestion(questionIdOrText) {
-        const data = await this.loadAllSheets();
-        return data.questions.all.find(q => 
-            q.id === questionIdOrText || q.question === questionIdOrText
-        );
+        try {
+            const data = await this.loadAllSheets();
+            return data.questions.all.find(q => 
+                q.id === questionIdOrText || 
+                q.question === questionIdOrText ||
+                q.question.toLowerCase().includes(questionIdOrText.toLowerCase())
+            );
+        } catch (error) {
+            console.error('Error getting question:', error);
+            return null;
+        }
     }
 
     /**
      * Get rubric for a specific question
      */
     async getRubric(questionIdOrText) {
-        const data = await this.loadAllSheets();
-        const question = await this.getQuestion(questionIdOrText);
-        
-        if (!question) return null;
-        
-        return data.rubrics[question.id] || data.rubrics[question.question] || null;
+        try {
+            const data = await this.loadAllSheets();
+            const question = await this.getQuestion(questionIdOrText);
+            
+            if (!question) return null;
+            
+            return data.rubrics[question.id] || 
+                   data.rubrics[question.question] || 
+                   null;
+        } catch (error) {
+            console.error('Error getting rubric:', error);
+            return null;
+        }
     }
 
     /**
      * Get answer for specific level
      */
     async getAnswer(questionIdOrText, level = 'basic') {
-        const question = await this.getQuestion(questionIdOrText);
-        if (!question) return null;
-        
-        return question.answers[level] || question.answers.basic;
+        try {
+            const question = await this.getQuestion(questionIdOrText);
+            if (!question) return null;
+            
+            return question.answers[level] || question.answers.basic;
+        } catch (error) {
+            console.error('Error getting answer:', error);
+            return null;
+        }
     }
 
     /**
-     * Save student progress (requires Apps Script backend)
+     * Get student progress for a specific student
      */
-    async saveProgress(studentId, questionId, score, response) {
-        // This requires a Google Apps Script Web App endpoint
-        // See setupAppsScriptBackend() method for instructions
-        
-        const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL';
-        
+    async getStudentProgress(studentId) {
         try {
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'saveProgress',
-                    studentId,
-                    questionId,
-                    score,
-                    response,
-                    timestamp: new Date().toISOString()
-                })
-            });
-            
-            console.log('✅ Progress saved to Google Sheets');
-            return true;
+            const data = await this.loadAllSheets();
+            return data.progress.byStudent[studentId] || [];
         } catch (error) {
-            console.error('❌ Failed to save progress:', error);
-            return false;
+            console.error('Error getting student progress:', error);
+            return [];
         }
     }
 
@@ -334,52 +419,19 @@ class SheetsIntegration {
             progress: null,
             lastUpdated: null
         };
-        console.log('Cache cleared');
+        console.log('🗑️ Cache cleared');
     }
 
     /**
-     * Instructions for setting up Apps Script backend for write operations
+     * Get loading status
      */
-    setupAppsScriptBackend() {
-        return `
-To enable saving student progress back to Google Sheets:
-
-1. Open your Google Sheet
-2. Go to Extensions → Apps Script
-3. Paste this code:
-
-function doPost(e) {
-    try {
-        const data = JSON.parse(e.postData.contents);
-        const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet3');
-        
-        if (data.action === 'saveProgress') {
-            sheet.appendRow([
-                data.studentId,
-                data.questionId,
-                '', // Attempt number (calculate based on existing records)
-                data.score,
-                data.timestamp,
-                data.response
-            ]);
-            
-            return ContentService.createTextOutput(JSON.stringify({
-                status: 'success'
-            })).setMimeType(ContentService.MimeType.JSON);
-        }
-    } catch (error) {
-        return ContentService.createTextOutput(JSON.stringify({
-            status: 'error',
-            message: error.toString()
-        })).setMimeType(ContentService.MimeType.JSON);
-    }
-}
-
-4. Deploy as Web App
-5. Set "Execute as" to "Me"
-6. Set "Who has access" to "Anyone"
-7. Copy the Web App URL and update APPS_SCRIPT_URL in sheets-integration.js
-        `;
+    getStatus() {
+        return {
+            isLoading: this.isLoading,
+            isCached: this.isCacheValid(),
+            error: this.loadError,
+            lastUpdated: this.cache.lastUpdated ? new Date(this.cache.lastUpdated).toLocaleString() : null
+        };
     }
 }
 
