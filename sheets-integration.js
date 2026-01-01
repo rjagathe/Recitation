@@ -53,6 +53,8 @@ class SheetsIntegration {
         // Get headers from first line
         const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
         
+        console.log('📋 CSV Headers:', headers);
+        
         // Parse data rows
         const data = [];
         for (let i = 1; i < lines.length; i++) {
@@ -95,6 +97,18 @@ class SheetsIntegration {
     }
 
     /**
+     * Helper to get value from object with multiple possible key names
+     */
+    getValue(obj, ...keys) {
+        for (const key of keys) {
+            if (obj[key] !== undefined && obj[key] !== null && obj[key] !== '') {
+                return obj[key];
+            }
+        }
+        return '';
+    }
+
+    /**
      * Check if cache is valid
      */
     isCacheValid() {
@@ -128,6 +142,9 @@ class SheetsIntegration {
             
             const parsed = this.parseCSV(csvText);
             console.log(`✅ ${sheetKey}: Loaded ${parsed.length} rows`);
+            if (parsed.length > 0) {
+                console.log(`📝 ${sheetKey} sample row:`, parsed[0]);
+            }
             return parsed;
             
         } catch (error) {
@@ -217,16 +234,16 @@ class SheetsIntegration {
 
         data.forEach(row => {
             const question = {
-                globalQuestionId: row.global_question_id || row.globalQuestionId || '',
-                questionCode: row.question_code || row.questionCode || '',
-                board: (row.board || 'tn').toLowerCase(),
-                medium: (row.medium || 'english').toLowerCase(),
-                grade: parseInt(row.grade) || 10,
-                subject: (row.subject || '').toLowerCase(),
-                lessonNo: parseInt(row.lesson_no || row.lessonNo) || 1,
-                questionNo: parseInt(row.question_no || row.questionNo) || 1,
-                questionText: row.question_text || row.questionText || '',
-                lessonId: row.lesson_id || row.lessonId || ''
+                globalQuestionId: this.getValue(row, 'global_question_id', 'globalQuestionId', 'Global Question ID'),
+                questionCode: this.getValue(row, 'question_code', 'questionCode', 'Question Code'),
+                board: (this.getValue(row, 'board', 'Board') || 'tn').toLowerCase(),
+                medium: (this.getValue(row, 'medium', 'Medium') || 'english').toLowerCase(),
+                grade: parseInt(this.getValue(row, 'grade', 'Grade')) || 10,
+                subject: (this.getValue(row, 'subject', 'Subject') || '').toLowerCase(),
+                lessonNo: parseInt(this.getValue(row, 'lesson_no', 'lessonNo', 'Lesson No')) || 1,
+                questionNo: parseInt(this.getValue(row, 'question_no', 'questionNo', 'Question No')) || 1,
+                questionText: this.getValue(row, 'question_text', 'questionText', 'Question Text'),
+                lessonId: this.getValue(row, 'lesson_id', 'lessonId', 'Lesson ID')
             };
 
             // Index by global question ID
@@ -268,9 +285,9 @@ class SheetsIntegration {
 
         data.forEach(row => {
             const lesson = {
-                lessonId: row.lesson_id || row.lessonId || '',
-                lessonName: row.lesson_name || row.lessonName || '',
-                lessonDocId: row.lesson_doc_id || row.lessonDocId || ''
+                lessonId: this.getValue(row, 'lesson_id', 'lessonId', 'Lesson ID'),
+                lessonName: this.getValue(row, 'lesson_name', 'lessonName', 'Lesson Name'),
+                lessonDocId: this.getValue(row, 'lesson_doc_id', 'lessonDocId', 'Lesson Doc ID')
             };
 
             lessons.byId[lesson.lessonId] = lesson;
@@ -290,20 +307,26 @@ class SheetsIntegration {
         };
 
         data.forEach(row => {
+            const globalQuestionId = this.getValue(row, 'global_question_id', 'globalQuestionId', 'Global Question ID');
+            
             const answer = {
-                globalQuestionId: row.global_question_id || row.globalQuestionId || '',
+                globalQuestionId: globalQuestionId,
                 levels: {
-                    basic: row.level_basic || row.levelBasic || '',
-                    elementary: row.level_elementary || row.levelElementary || '',
-                    intermediate: row.level_intermediate || row.levelIntermediate || '',
-                    advanced: row.level_advanced || row.levelAdvanced || '',
-                    prodigy: row.level_prodigy || row.levelProdigy || ''
+                    basic: this.getValue(row, 'level_basic', 'levelBasic', 'Level Basic', 'Basic'),
+                    elementary: this.getValue(row, 'level_elementary', 'levelElementary', 'Level Elementary', 'Elementary'),
+                    intermediate: this.getValue(row, 'level_intermediate', 'levelIntermediate', 'Level Intermediate', 'Intermediate'),
+                    advanced: this.getValue(row, 'level_advanced', 'levelAdvanced', 'Level Advanced', 'Advanced'),
+                    prodigy: this.getValue(row, 'level_prodigy', 'levelProdigy', 'Level Prodigy', 'Prodigy')
                 }
             };
 
-            answers.byId[answer.globalQuestionId] = answer;
+            console.log(`🔍 Answer for ${globalQuestionId}:`, answer.levels);
+
+            answers.byId[globalQuestionId] = answer;
             answers.all.push(answer);
         });
+
+        console.log('📚 Total answers indexed:', Object.keys(answers.byId).length);
 
         return answers;
     }
@@ -320,21 +343,38 @@ class SheetsIntegration {
             all: []
         };
 
+        let matchedAnswers = 0;
+        let unmatchedQuestions = [];
+
         questions.all.forEach(question => {
-            const answer = answers.byId[question.globalQuestionId] || { levels: {} };
+            const answer = answers.byId[question.globalQuestionId];
             const lesson = lessons.byId[question.lessonId] || {};
+
+            if (!answer) {
+                console.warn(`⚠️ No answer found for question: ${question.globalQuestionId}`);
+                unmatchedQuestions.push(question.globalQuestionId);
+            } else {
+                matchedAnswers++;
+            }
 
             const mergedItem = {
                 ...question,
                 lessonName: lesson.lessonName || '',
                 lessonDocId: lesson.lessonDocId || '',
-                answers: {
+                answers: answer ? {
                     basic: answer.levels.basic || '',
                     elementary: answer.levels.elementary || '',
                     intermediate: answer.levels.intermediate || '',
                     advanced: answer.levels.advanced || '',
                     prodigy: answer.levels.prodigy || '',
                     expert: answer.levels.prodigy || '' // Alias for compatibility
+                } : {
+                    basic: '',
+                    elementary: '',
+                    intermediate: '',
+                    advanced: '',
+                    prodigy: '',
+                    expert: ''
                 }
             };
 
@@ -362,6 +402,11 @@ class SheetsIntegration {
 
             merged.all.push(mergedItem);
         });
+
+        console.log(`✅ Merged ${matchedAnswers} questions with answers`);
+        if (unmatchedQuestions.length > 0) {
+            console.warn(`⚠️ ${unmatchedQuestions.length} questions without answers:`, unmatchedQuestions);
+        }
 
         return merged;
     }
