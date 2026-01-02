@@ -730,6 +730,16 @@
         }
     </style>
 </head>
+    <script src="sheets-integration.js"></script>
+<script>
+  // Connects to your Activate Window button
+  document.querySelector('button').onclick = async () => {
+    const questions = await new SheetsIntegration().getQuestions(10, 'sc', 1);
+    console.log('✅ Questions loaded:', questions.length);
+  };
+</script>
+
+
 <body>
     <div class="container">
         <header>
