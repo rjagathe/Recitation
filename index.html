@@ -730,14 +730,24 @@
         }
     </style>
 </head>
-    <script src="sheets-integration.js"></script>
+  <script src="sheets-integration.js"></script>
 <script>
-  // Connects to your Activate Window button
-  document.querySelector('button').onclick = async () => {
-    const questions = await new SheetsIntegration().getQuestions(10, 'sc', 1);
-    console.log('✅ Questions loaded:', questions.length);
-  };
+  document.addEventListener('DOMContentLoaded', async () => {
+    const btn = document.querySelector('button');
+    if (btn) {
+      btn.onclick = async () => {
+        try {
+          const questions = await new SheetsIntegration().getQuestions(10, 'sc', 1);
+          console.log('✅ Loaded', questions.length, 'questions');
+          alert(questions[0]?.questionText + '\n\nAnswer: ' + questions[0]?.answers.basic);
+        } catch(e) {
+          alert('Error: ' + e.message);
+        }
+      };
+    }
+  });
 </script>
+
 
 
 <body>
