@@ -1835,5 +1835,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('backBtn').style.display = (currentState.grade || currentState.question) ? 'block' : 'none';
         }
     </script>
+    <button id="btn" style="padding:15px 30px;font-size:18px;background:#4CAF50;color:white;border:none;border-radius:5px;cursor:pointer;margin:20px 0;">Activate Window</button>
+<script src="sheets-integration.js"></script>
+<script>
+document.getElementById('btn').onclick=async()=>{try{const q=await new SheetsIntegration().getQuestions(1,'sc',1);alert(`Q: ${q[0].questionText}\n\nA: ${q[0].answers.basic}`);}catch(e){alert('Error: '+e.message);}};
+</script>
+
 </body>
 </html>
